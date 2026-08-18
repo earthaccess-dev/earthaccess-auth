@@ -273,6 +273,7 @@ def find_provider_by_shortname(short_name: str, cloud_hosted: bool) -> str | Non
     base_url = "https://cmr.earthdata.nasa.gov/search/collections.umm_json?"
     providers = requests.get(
         f"{base_url}&cloud_hosted={cloud_hosted}&short_name={short_name}",
+        timeout=15,
     ).json()
     if int(providers["hits"]) > 0:
         return str(providers["items"][0]["meta"]["provider-id"])
