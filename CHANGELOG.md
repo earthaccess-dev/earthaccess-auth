@@ -18,4 +18,20 @@ changelog for history predating the extraction.
   and an S3 credential provider, respectively.
   ([#1423](https://github.com/earthaccess-dev/earthaccess/pull/1423))
 
+### Changed
+
+Behavior differences from the implementation extracted out of `earthaccess`:
+
+- `Auth.login` raises `ValueError` for unknown strategy names instead of
+  silently returning an unauthenticated instance.
+- `Auth.login` on an already-authenticated instance is now a no-op unless a
+  different `system` is requested.
+- `Auth.get_s3_credentials` raises instead of returning an empty dict:
+  `ValueError` when unauthenticated, and the new
+  `S3CredentialsRequestFailure` when the `s3credentials` endpoint rejects
+  the request (e.g. unaccepted EULA).
+- `find_provider_by_shortname` applies a 15-second timeout to its CMR
+  request instead of potentially hanging forever.
+- Python 3.12 or newer is required.
+
 [Unreleased]: https://github.com/earthaccess-dev/earthaccess-auth/commits/main/
