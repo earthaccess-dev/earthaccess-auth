@@ -52,3 +52,5 @@ commands above locally covers everything CI will check.
   hand from the weekly CMR sweep — see
   `docs/explanation/cmr-s3-buckets.md` before editing it.
 - Add a `CHANGELOG.md` entry for user-visible changes.
+
+Releases are cut by maintainers — see [RELEASING.md](RELEASING.md).
