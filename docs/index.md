@@ -25,6 +25,8 @@ pip install earthaccess-auth[obstore]   # + obstore credential provider bridge
 import earthaccess_auth
 
 auth = earthaccess_auth.login()  # tries env vars, then ~/.netrc, then prompts
+if not auth.authenticated:
+    raise SystemExit("no Earthdata Login credentials found")
 token = auth.token["access_token"]
 ```
 
