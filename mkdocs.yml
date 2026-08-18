@@ -1,0 +1,81 @@
+site_name: earthaccess-auth
+site_description: NASA Earthdata Login (EDL) authentication core, standalone
+site_url: https://earthaccess-auth.readthedocs.io/en/latest/
+
+# Fail on broken links
+strict: true
+
+theme:
+  name: "material"
+  palette:
+    - scheme: default
+      primary: teal
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+  features:
+    - content.code.copy
+    - navigation.indexes
+    - navigation.path
+    - navigation.tabs
+
+repo_name: "earthaccess-dev/earthaccess-auth"
+repo_url: "https://github.com/earthaccess-dev/earthaccess-auth"
+edit_uri: "edit/main/docs/"
+
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: ["src"]
+          inventories:
+            - https://developmentseed.org/obstore/latest/objects.inv
+          options:
+            docstring_style: google
+            docstring_options:
+              ignore_init_summary: no
+            merge_init_into_class: yes
+            show_submodules: no
+            show_root_heading: false
+            show_source: false
+            separate_signature: true
+  - autorefs
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - toc:
+      toc_depth: 2
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets:
+      base_path: ["."]
+      check_paths: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+nav:
+  - Overview: index.md
+  - How-to:
+      - "Read a dataset with xarray": howto/read-a-dataset.md
+      - "List the contents of an S3 bucket": howto/list-bucket-contents.md
+      - "Identify a file from its magic bytes": howto/magic-bytes.md
+      - "Get S3 credentials and bearer tokens": howto/s3-credentials-and-bearer-token.md
+  - Explanation:
+      - "Choosing a backend": explanation/choosing-a-backend.md
+      - "How the bucket registry is built": explanation/cmr-s3-buckets.md
+  - Reference:
+      - "API": reference/api.md
+
+watch:
+  - docs
+  - src
+  - examples

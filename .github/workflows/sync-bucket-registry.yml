@@ -1,0 +1,80 @@
+name: Sync S3 bucket registry from CMR
+
+on:
+  schedule:
+    # Mondays at 06:00 UTC.
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    name: Sweep CMR and diff against the vendored bucket registry
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # only the sync branch, via create-pull-request below
+      pull-requests: write
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+        with:
+          enable-cache: true
+          cache-suffix: sync-bucket-registry
+
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.12"
+
+      - name: Install package
+        run: uv sync --locked --no-default-groups
+
+      - name: Sweep CMR for the current bucket -> endpoint mapping
+        run: |
+          uv run --no-sync python scripts/sync_bucket_registry.py \
+            --output scripts/bucket_registry.latest.json
+
+      - name: Diff against the vendored BUCKET_ENDPOINTS (for the PR body)
+        id: diff
+        run: |
+          uv run --no-sync python scripts/sync_bucket_registry.py \
+            --check > drift.txt || true
+          {
+            echo "summary<<EOF"
+            cat drift.txt
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      # bucket_registry.latest.json only changes when the live CMR sweep's
+      # output differs from what's committed, so this naturally no-ops (no
+      # PR opened) when there's no drift.
+      - name: Open a PR if the sweep changed
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          commit-message: "chore: update CMR bucket registry snapshot"
+          title: "chore: CMR bucket registry drift detected"
+          body: |
+            The weekly CMR sweep (`scripts/sync_bucket_registry.py`) found a
+            different bucket -> `s3credentials` endpoint mapping than what's
+            committed in `scripts/bucket_registry.latest.json`.
+
+            Diff against the vendored `BUCKET_ENDPOINTS` in
+            `src/earthaccess_auth/daac.py`:
+
+            ```
+            ${{ steps.diff.outputs.summary }}
+            ```
+
+            If this reflects a real, intentional CMR change (new mission, new
+            DAAC, endpoint migration), update `BUCKET_ENDPOINTS` in `daac.py` by
+            hand to match before merging — see
+            `docs/explanation/cmr-s3-buckets.md`.
+          branch: sync/bucket-registry
+          delete-branch: true
+          add-paths: scripts/bucket_registry.latest.json

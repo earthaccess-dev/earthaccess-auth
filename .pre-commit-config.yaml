@@ -1,0 +1,62 @@
+ci:
+  autoupdate_schedule: "quarterly"
+  autoupdate_commit_msg: "chore: update pre-commit hooks"
+  autofix_prs: false # Comment "pre-commit.ci autofix" on a PR to trigger
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      # Validate format
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      # Check for common mistakes
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+      - id: check-symlinks
+      - id: check-vcs-permalinks
+      - id: destroyed-symlinks
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+      - id: no-commit-to-branch # protects `main` by default
+      - id: trailing-whitespace
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.2
+    hooks:
+      - id: ruff
+        args: ["--fix", "--show-fixes", "--exit-non-zero-on-fix"]
+      - id: ruff-format
+
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: "0.11.26"
+    hooks:
+      # Asserts that the lockfile is valid for pyproject.toml.
+      # If it fails, update the lockfile by running:
+      #
+      #   prek run -a --hook-stage manual uv-lock
+      #
+      # Or, if you have `uv` installed, run `uv lock`.
+      - id: uv-lock
+        args: ["--locked", "--offline"]
+      - id: uv-lock
+        stages: ["manual"]
+
+  - repo: https://github.com/google/yamlfmt
+    rev: v0.21.0
+    hooks:
+      - id: yamlfmt
+        entry: python scripts/yamlfmt.py
+        types_or: [yaml]
+
+  - repo: https://github.com/codespell-project/codespell
+    rev: "v2.4.2"
+    hooks:
+      - id: "codespell"
+        exclude: ".codespellignore|tests/.*"
+        additional_dependencies: ["tomli"]

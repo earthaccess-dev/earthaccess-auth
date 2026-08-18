@@ -1,0 +1,140 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "earthaccess-auth"
+dynamic = ["version"]
+description = "NASA Earthdata Login (EDL) authentication core, extracted from earthaccess"
+authors = [{ name = "earthaccess contributors" }]
+license = "MIT"
+license-files = ["LICENSE"]
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering",
+  "Typing :: Typed",
+]
+dependencies = [
+  "requests >=2.26",
+  "tinynetrc >=1.3.1",
+  # for @deprecated on Auth.refresh_tokens; drop when floor reaches 3.13
+  # (warnings.deprecated) or if the deprecated shim is not carried over
+  "typing_extensions >=4.5",
+]
+
+[project.urls]
+Repository = "https://github.com/earthaccess-dev/earthaccess-auth"
+Documentation = "https://earthaccess-auth.readthedocs.io/"
+Changelog = "https://github.com/earthaccess-dev/earthaccess-auth/blob/main/CHANGELOG.md"
+
+[project.optional-dependencies]
+fsspec = [
+  "fsspec >=2025.2",
+  "aiohttp >=3.8",
+]
+obstore = [
+  "obstore >=0.9",
+]
+
+[dependency-groups]
+test = [
+  "pytest >=8.0",
+  "responses >=0.25",
+]
+typecheck = [
+  "mypy >=1.15",
+  "types-requests >=2.26",
+  # so mypy can follow the optional adapter imports
+  "earthaccess-auth[fsspec,obstore]",
+]
+docs = [
+  "mkdocs >=1.2,!=1.6.0,<2.0",
+  "mkdocs-material >=9.7.1,<10.0",
+  "mkdocstrings[python] >=0.19.0",
+  "pymdown-extensions >=9.2",
+  "pygments >=2.11.1",
+  # so mkdocstrings can import adapters.fsspec / adapters.obstore for their docstrings
+  "earthaccess-auth[fsspec,obstore]",
+]
+dev = [
+  { include-group = "test" },
+  { include-group = "typecheck" },
+  { include-group = "docs" },
+  "ruff >=0.15",
+]
+
+[tool.uv.sources]
+earthaccess-auth = { workspace = true }
+
+[tool.hatch.version]
+source = "vcs"
+fallback-version = "0.0.0"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/earthaccess_auth"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["error::UserWarning"]
+
+[tool.mypy]
+python_version = "3.12"
+files = ["src", "tests", "scripts"]
+mypy_path = ["src"]
+strict = true
+pretty = true                        # Show additional context in error messages
+enable_error_code = "redundant-self"
+
+[[tool.mypy.overrides]]
+module = ["tinynetrc.*", "fsspec.*"]
+ignore_missing_imports = true
+
+[tool.codespell]
+skip = "uv.lock,*.yml,*.yaml,./tests"
+ignore-words = ".codespellignore"
+
+[tool.ruff]
+line-length = 88
+src = ["src", "tests", "scripts"]
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+  "CPY",
+  "ANN401",
+  "COM812",
+  "D1",
+  "D205",
+  "D401",
+  "D417",
+  "E501",
+  "FIX002",
+  "PT006",
+  "PT007",
+  "PT009",
+  "PT011",
+  "PT012",
+  "PT027",
+  "S113",
+  "TD002",
+  "TD003",
+  "TD004"
+]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["PLR2004", "FBT", "INP001", "SLF001", "S101", "S108", "S301", "S603", "S607"]
+"scripts/**/*.py" = ["INP001"]
+"examples/**/*.py" = ["INP001", "T201"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
