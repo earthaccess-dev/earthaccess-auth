@@ -150,6 +150,7 @@ class Auth:
         Raises:
             LoginAttemptFailure: If the NASA Earthdata Login service rejects
                 credentials.
+            ValueError: If `strategy` is not a known strategy name.
         """
         if system is not None:
             self._set_earthdata_system(system)
@@ -164,6 +165,12 @@ class Auth:
             self._netrc()
         elif strategy == "environment":
             self._environment()
+        else:
+            msg = (
+                f"Unknown login strategy: {strategy!r}; expected one of "
+                "'interactive', 'netrc', or 'environment'"
+            )
+            raise ValueError(msg)
 
         return self
 

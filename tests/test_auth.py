@@ -143,3 +143,8 @@ def test_get_s3_credentials_raises_when_endpoint_unresolved() -> None:
 
     with pytest.raises(S3CredentialsEndpointUnresolved):
         auth.get_s3_credentials(daac="NOT_A_REAL_DAAC")
+
+
+def test_login_unknown_strategy_raises() -> None:
+    with pytest.raises(ValueError, match="Unknown login strategy"):
+        Auth().login(strategy="not-a-strategy")

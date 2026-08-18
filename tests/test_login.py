@@ -83,3 +83,8 @@ def test_login_all_uses_environment_token(monkeypatch: pytest.MonkeyPatch) -> No
         auth = earthaccess_auth.login(strategy="all")
     assert auth.authenticated
     assert auth.token == {"access_token": "token-123"}
+
+
+def test_login_unknown_strategy_raises() -> None:
+    with pytest.raises(ValueError, match="Unknown login strategy"):
+        earthaccess_auth.login(strategy="not-a-strategy")
