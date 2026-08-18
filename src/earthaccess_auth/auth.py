@@ -179,7 +179,7 @@ class Auth:
         self.system = system
 
         # Maybe all these predefined URLs should be in a constants.py file
-        self.EDL_FIND_OR_CREATE_TOKEN_URL = (
+        self._edl_token_url = (
             f"https://{self.system.edl_hostname}/api/users/find_or_create_token"
         )
 
@@ -372,7 +372,7 @@ class Auth:
     def _find_or_create_token(self) -> requests.Response:
         with self.get_session() as session:
             return session.post(
-                self.EDL_FIND_OR_CREATE_TOKEN_URL,
+                self._edl_token_url,
                 headers={"Accept": "application/json"},
                 timeout=10,
             )
