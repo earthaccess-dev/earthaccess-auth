@@ -11,6 +11,7 @@ from earthaccess_auth import Auth
 from earthaccess_auth.exceptions import (
     LoginAttemptFailure,
     S3CredentialsEndpointUnresolved,
+    S3CredentialsRequestFailure,
 )
 
 logger = logging.getLogger(__name__)
@@ -157,3 +158,20 @@ def test_login_skips_reauthentication_when_already_authenticated() -> None:
         Auth, "_netrc", side_effect=AssertionError("should not re-authenticate")
     ):
         assert auth.login(strategy="netrc") is auth
+
+
+def test_get_s3_credentials_raises_when_unauthenticated() -> None:
+    with pytest.raises(ValueError, match="authenticated"):
+        Auth().get_s3_credentials(daac="NSIDC")
+
+
+@responses.activate
+def test_get_s3_credentials_raises_when_endpoint_rejects_request() -> None:
+    endpoint = "https://data.nsidc.earthdatacloud.nasa.gov/s3credentials"
+    responses.add(responses.GET, endpoint, json={"error": "EULA"}, status=403)
+
+    auth = Auth()
+    auth.authenticated = True
+
+    with pytest.raises(S3CredentialsRequestFailure, match="EULA"):
+        auth.get_s3_credentials(endpoint=endpoint)

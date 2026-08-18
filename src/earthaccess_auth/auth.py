@@ -26,6 +26,7 @@ from earthaccess_auth.exceptions import (
     LoginAttemptFailure,
     LoginStrategyUnavailable,
     S3CredentialsEndpointUnresolved,
+    S3CredentialsRequestFailure,
 )
 from earthaccess_auth.system import PROD, System
 
@@ -216,16 +217,19 @@ class Auth:
 
         Returns:
             A dict with the temporary AWS S3 credentials (`accessKeyId`,
-            `secretAccessKey`, `sessionToken`, `expiration`), or an empty
-            dict if not authenticated yet.
+            `secretAccessKey`, `sessionToken`, `expiration`).
 
         Raises:
+            ValueError: If this instance has not been authenticated yet.
             S3CredentialsEndpointUnresolved: If no `s3credentials` endpoint
                 could be resolved from `endpoint`, `daac`, or `provider`.
+            S3CredentialsRequestFailure: If the `s3credentials` endpoint
+                rejects the request, e.g. because the DAAC's EULA hasn't
+                been accepted.
         """
         if not self.authenticated:
-            logger.info("We need to authenticate with EDL first")
-            return {}
+            msg = "auth must be authenticated before use"
+            raise ValueError(msg)
 
         auth_url = endpoint or self._get_cloud_auth_url(
             daac_shortname=daac,
@@ -248,17 +252,13 @@ class Auth:
             if r:
                 return cast("dict[str, str]", r.json())
 
-            logger.error(
-                "Authentication with Earthdata Login failed with:\n%s",
-                r.text[:1000],
+            msg = (
+                f"The s3credentials endpoint {auth_url} rejected the request "
+                f"with status {r.status_code}:\n{r.text[:1000]}\n"
+                f"Consider accepting the EULAs available at {self._eula_url} "
+                f"and applications at {self._apps_url}."
             )
-            logger.error(
-                "Consider accepting the EULAs available at %s and applications at %s",
-                self._eula_url,
-                self._apps_url,
-            )
-
-            return {}
+            raise S3CredentialsRequestFailure(msg)
 
     def get_session(self) -> requests.Session:
         """Build a new `requests.Session` with EDL authentication configured.

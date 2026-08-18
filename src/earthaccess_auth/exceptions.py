@@ -27,3 +27,12 @@ class S3CredentialsEndpointUnresolved(Exception):  # noqa: N818
     registry, or the DAAC has no cloud collections and therefore no
     `s3credentials` URL.
     """
+
+
+class S3CredentialsRequestFailure(Exception):  # noqa: N818
+    """Raised when a DAAC's `s3credentials` endpoint rejects a request.
+
+    Commonly this means the EDL profile hasn't accepted the DAAC's EULA or
+    application terms yet; the error message includes the URLs to review
+    them.
+    """

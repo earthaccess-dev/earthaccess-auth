@@ -17,6 +17,7 @@ from earthaccess_auth.exceptions import (
     LoginAttemptFailure,
     LoginStrategyUnavailable,
     S3CredentialsEndpointUnresolved,
+    S3CredentialsRequestFailure,
 )
 from earthaccess_auth.system import PROD, UAT, System
 
@@ -28,6 +29,7 @@ __all__ = [
     "LoginAttemptFailure",
     "LoginStrategyUnavailable",
     "S3CredentialsEndpointUnresolved",
+    "S3CredentialsRequestFailure",
     "SessionWithHeaderRedirection",
     "System",
     "login",
