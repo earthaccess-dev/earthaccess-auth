@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "Please cite this software using these metadata."
+
+title: "earthaccess-auth"
+abstract: "NASA Earthdata Login (EDL) authentication core, extracted from earthaccess"
+type: "software"
+license: "MIT"
+repository-code: "https://github.com/earthaccess-dev/earthaccess-auth"
+url: "https://earthaccess-auth.readthedocs.io/"
+contact:
+  - name: "The earthaccess community"
+    website: "https://github.com/earthaccess-dev/earthaccess/discussions"
+authors:
+  - name: "The earthaccess community"
+keywords:
+  - "authentication"
+  - "NASA"
+  - "Earthdata"
+  - "EDL"
