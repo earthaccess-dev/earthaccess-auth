@@ -14,7 +14,7 @@ on:
       - "pyproject.toml"
       - ".github/workflows/docs.yml"
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, reopened]
     paths:
       - "docs/**"
       - "src/**"
