@@ -45,6 +45,7 @@ obstore = [
 [dependency-groups]
 test = [
   "pytest >=8.0",
+  "pytest-cov >=6.0",
   "responses >=0.25",
 ]
 typecheck = [
