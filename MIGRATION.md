@@ -1,6 +1,6 @@
 # earthaccess-side changes
 
-What changes inside the existing [`earthaccess`](https://github.com/earthaccess-dev/earthaccess) package now that `earthaccess_auth` (this repository) is the single implementation. The publish workflow and lockstep-release wiring under **Remaining** below are still future intent.
+What changes inside the existing [`earthaccess`](https://github.com/earthaccess-dev/earthaccess) package now that `earthaccess_auth` (this repository) is the single implementation.
 
 ## Shim modules
 

@@ -47,7 +47,7 @@ prefix.
 ## Running the sweep
 
 ```console
-$ python earthaccess-auth/scripts/sync_bucket_registry.py --output bucket_registry.json
+$ python scripts/sync_bucket_registry.py --output bucket_registry.json
 Swept 9846 cloud-hosted collections -> 36 buckets.
 Wrote bucket_registry.json
 ```
