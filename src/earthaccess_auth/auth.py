@@ -155,7 +155,7 @@ class Auth:
         if system is not None:
             self._set_earthdata_system(system)
 
-        if self.authenticated and (system == self.system):
+        if self.authenticated and (system is None or system == self.system):
             logger.debug("We are already authenticated with NASA EDL")
             return self
 

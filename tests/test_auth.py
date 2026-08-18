@@ -148,3 +148,12 @@ def test_get_s3_credentials_raises_when_endpoint_unresolved() -> None:
 def test_login_unknown_strategy_raises() -> None:
     with pytest.raises(ValueError, match="Unknown login strategy"):
         Auth().login(strategy="not-a-strategy")
+
+
+def test_login_skips_reauthentication_when_already_authenticated() -> None:
+    auth = Auth()
+    auth.authenticated = True
+    with mock.patch.object(
+        Auth, "_netrc", side_effect=AssertionError("should not re-authenticate")
+    ):
+        assert auth.login(strategy="netrc") is auth
