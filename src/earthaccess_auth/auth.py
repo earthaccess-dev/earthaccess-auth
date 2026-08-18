@@ -386,8 +386,8 @@ class Auth:
         try:
             netrc_loc.touch(exist_ok=True)
             netrc_loc.chmod(0o600)
-        except Exception:
-            logger.exception("")
+        except OSError:
+            logger.exception("Failed to persist credentials to %s", netrc_loc)
             return False
 
         my_netrc = Netrc(str(netrc_loc))
