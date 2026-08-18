@@ -1,5 +1,10 @@
 # earthaccess-auth
 
+[![Tests](https://github.com/earthaccess-dev/earthaccess-auth/actions/workflows/test.yml/badge.svg)](https://github.com/earthaccess-dev/earthaccess-auth/actions/workflows/test.yml)
+[![Documentation](https://readthedocs.org/projects/earthaccess-auth/badge/?version=latest)](https://earthaccess-auth.readthedocs.io/)
+[![PyPI](https://img.shields.io/pypi/v/earthaccess-auth)](https://pypi.org/project/earthaccess-auth/)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/earthaccess-dev/earthaccess-auth/badge)](https://scorecard.dev/viewer/?uri=github.com/earthaccess-dev/earthaccess-auth)
+
 A minimal-dependency distribution containing only the NASA Earthdata Login (EDL) authentication core of earthaccess: login strategies, token lifecycle, per-DAAC S3 credential exchange, and the redirect-safe requests session. Integrations with fsspec and obstore are optional extras, so auth-only consumers install none of the search/download stack.
 
 ## Motivation
