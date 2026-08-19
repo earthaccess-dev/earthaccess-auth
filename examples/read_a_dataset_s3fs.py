@@ -5,6 +5,7 @@
 #     "s3fs",
 #     "xarray",
 #     "h5netcdf",
+#     "h5py",
 # ]
 # ///
 """Read an S3-hosted granule into xarray via s3fs.

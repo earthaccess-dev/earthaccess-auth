@@ -4,6 +4,7 @@
 #     "earthaccess-auth[fsspec]",
 #     "xarray",
 #     "h5netcdf",
+#     "h5py",
 # ]
 # ///
 """Read a granule into xarray over HTTPS via fsspec.
