@@ -28,4 +28,3 @@ import earthaccess_auth
 auth = earthaccess_auth.login(strategy="environment")
 token = auth.token["access_token"]  # inject into icechunk http_store headers
 ```
-
