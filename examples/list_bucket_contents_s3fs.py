@@ -4,10 +4,6 @@
 #     "earthaccess-auth",
 #     "s3fs",
 # ]
-#
-# [tool.uv.sources]
-# # TODO: switch to a released earthaccess-auth once this branch merges
-# earthaccess-auth = { git = "https://github.com/maxrjones/earthaccess", subdirectory = "earthaccess-auth", branch = "poc/earthaccess-auth" }
 # ///
 """List the contents of an S3 bucket prefix via s3fs.
 

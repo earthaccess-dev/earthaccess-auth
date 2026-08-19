@@ -1,10 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
 # dependencies = ["earthaccess-auth[obstore]"]
-#
-# [tool.uv.sources]
-# # TODO: switch to a released earthaccess-auth once this branch merges
-# earthaccess-auth = { git = "https://github.com/maxrjones/earthaccess", subdirectory = "earthaccess-auth", branch = "poc/earthaccess-auth" }
 # ///
 """Build a headers dict for HTTP-based stores fronting EDL-protected data.
 

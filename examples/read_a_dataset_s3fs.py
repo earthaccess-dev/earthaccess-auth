@@ -6,10 +6,6 @@
 #     "xarray",
 #     "h5netcdf",
 # ]
-#
-# [tool.uv.sources]
-# # TODO: switch to a released earthaccess-auth once this branch merges
-# earthaccess-auth = { git = "https://github.com/maxrjones/earthaccess", subdirectory = "earthaccess-auth", branch = "poc/earthaccess-auth" }
 # ///
 """Read an S3-hosted granule into xarray via s3fs.
 
