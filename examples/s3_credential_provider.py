@@ -1,5 +1,5 @@
 # /// script
-# requires-python = ">=3.11"
+# requires-python = ">=3.12"
 # dependencies = ["earthaccess-auth[obstore]"]
 # ///
 """Build an obstore credential provider that refreshes S3 credentials itself.
