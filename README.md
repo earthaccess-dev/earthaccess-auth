@@ -9,7 +9,7 @@ A minimal-dependency distribution containing only the NASA Earthdata Login (EDL)
 
 ## Motivation
 
-Downstream services and libraries commonly need EDL auth and nothing else from earthaccess. One concrete examples from the titiler ecosystem is `titiler-multidim`, which needs a bearer token string to inject into icechunk virtual chunk container headers. It deploys as an AWS Lambda zip, where earthaccess's transitive dependencies (s3fs, fsspec, python-cmr, pqdm, tenacity, ...) count against the 250 MB unpacked limit for the sake of ~500 lines of auth logic.
+Downstream services and libraries commonly need EDL auth and nothing else from earthaccess. One concrete example from the titiler ecosystem is `titiler-multidim`, which needs a bearer token string to inject into icechunk virtual chunk container headers. It deploys as an AWS Lambda zip, where earthaccess's transitive dependencies (s3fs, fsspec, python-cmr, pqdm, tenacity, ...) count against the 250 MB unpacked limit for the sake of ~500 lines of auth logic.
 
 ## Install matrix
 
@@ -17,7 +17,7 @@ Downstream services and libraries commonly need EDL auth and nothing else from e
 pip install earthaccess-auth            # requests + tinynetrc + typing_extensions only
 pip install earthaccess-auth[fsspec]    # + fsspec/aiohttp HTTPS session
 pip install earthaccess-auth[obstore]   # + obstore credential provider bridge
-pip install earthaccess                 # unchanged UX; depends on earthaccess-auth
+pip install earthaccess                 # full stack (does not yet depend on this package)
 ```
 
 ## Example: the titiler-multidim case
