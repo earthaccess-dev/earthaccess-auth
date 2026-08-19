@@ -25,6 +25,6 @@ sniffing bytes.
 --8 < --"examples/magic_bytes.py"
 ```
 
-This script is [`examples/magic_bytes.py`](https://github.com/earthaccess-dev/earthaccess/tree/main/earthaccess-auth/examples/magic_bytes.py),
+This script is [`examples/magic_bytes.py`](https://github.com/earthaccess-dev/earthaccess-auth/tree/main/examples/magic_bytes.py),
 and declares its own dependencies ([PEP 723](https://peps.python.org/pep-0723/)),
 so `uv run examples/magic_bytes.py` works standalone.

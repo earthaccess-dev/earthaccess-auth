@@ -57,7 +57,7 @@ call underneath doesn't change.
     ```
 
 All four scripts live in
-[`examples/`](https://github.com/earthaccess-dev/earthaccess/tree/main/earthaccess-auth/examples)
+[`examples/`](https://github.com/earthaccess-dev/earthaccess-auth/tree/main/examples)
 and declare their own dependencies ([PEP 723](https://peps.python.org/pep-0723/)),
 so e.g. `uv run examples/read_a_dataset_obstore.py` works standalone, no separate
 install step required.

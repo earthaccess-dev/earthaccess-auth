@@ -5,7 +5,7 @@ token, temporary AWS S3 credentials, and (via the `obstore` extra) a
 credential *provider* that fetches and refreshes those credentials for you.
 Which one you want depends on what you're handing it to. Each of these is
 also a standalone, runnable script in
-[`examples/`](https://github.com/earthaccess-dev/earthaccess/tree/main/earthaccess-auth/examples)
+[`examples/`](https://github.com/earthaccess-dev/earthaccess-auth/tree/main/examples)
 declaring its own dependencies ([PEP 723](https://peps.python.org/pep-0723/)).
 
 ## The raw bearer token
