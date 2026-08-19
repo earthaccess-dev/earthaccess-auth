@@ -7,7 +7,7 @@ credentials work at all.
 === "obstore"
 
     ```python
-    --8 < --"examples/list_bucket_contents_obstore.py"
+    --8<-- "examples/list_bucket_contents_obstore.py"
     ```
 
     [`obstore.list()`][obstore.list] returns a lazily-paginated stream: each
@@ -27,7 +27,7 @@ credentials work at all.
     [Get S3 credentials and bearer tokens](s3-credentials-and-bearer-token.md).
 
     ```python
-    --8 < --"examples/list_bucket_contents_s3fs.py"
+    --8<-- "examples/list_bucket_contents_s3fs.py"
     ```
 
     Unlike `obstore.list()`, `S3FileSystem.ls()` returns a single flat list

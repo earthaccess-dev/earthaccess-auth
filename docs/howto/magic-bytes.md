@@ -22,7 +22,7 @@ checking whether a `zarr.json` or `.zarray` key exists at that prefix, not
 sniffing bytes.
 
 ```python
---8 < --"examples/magic_bytes.py"
+--8<-- "examples/magic_bytes.py"
 ```
 
 This script is [`examples/magic_bytes.py`](https://github.com/earthaccess-dev/earthaccess-auth/blob/main/examples/magic_bytes.py),

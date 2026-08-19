@@ -15,7 +15,7 @@ into a header yourself. This is the pattern a Lambda-deployed consumer with
 a tight dependency budget would use.
 
 ```python
---8 < --"examples/bearer_token.py"
+--8<-- "examples/bearer_token.py"
 ```
 
 ## Header dict for HTTP-based stores
@@ -26,7 +26,7 @@ obspec-utils's `AiohttpStore` — see [Read a dataset with xarray](read-a-datase
 `http_client_options`:
 
 ```python
---8 < --"examples/http_headers.py"
+--8<-- "examples/http_headers.py"
 ```
 
 ## Temporary AWS S3 credentials
@@ -36,7 +36,7 @@ For anything that wants `key`/`secret`/`token` (or `aws_access_key_id`
 `s3fs`, or the AWS CLI:
 
 ```python
---8 < --"examples/s3_credentials.py"
+--8<-- "examples/s3_credentials.py"
 ```
 
 You can look credentials up by DAAC short name (`daac="NSIDC"`), by cloud
@@ -55,7 +55,7 @@ on its own once the current credentials near expiry, so a long-running job
 doesn't need its own refresh loop:
 
 ```python
---8 < --"examples/s3_credential_provider.py"
+--8<-- "examples/s3_credential_provider.py"
 ```
 
 `credentials_endpoint` is a DAAC's `s3credentials` URL: the
