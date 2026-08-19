@@ -9,14 +9,7 @@ A minimal-dependency distribution containing only the NASA Earthdata Login (EDL)
 
 ## Motivation
 
-Several downstream services need EDL auth and nothing else from earthaccess. Two concrete examples from the titiler ecosystem:
-
-- titiler-multidim needs a bearer token string to inject into icechunk virtual chunk container headers. It deploys as an AWS Lambda zip, where earthaccess's transitive dependencies (s3fs, fsspec, python-cmr, pqdm, tenacity, ...) count against the 250 MB unpacked limit for the sake of ~500 lines of auth logic.
-- titiler-cmr uses `earthaccess.login()` plus `get_fsspec_https_session()` and `get_s3_credentials()`; it uses CMR search too, so it keeps full earthaccess, but its auth usage is exactly the surface extracted here.
-
-obstore has independently grown `obstore.auth.earthdata` (EDL to temporary S3 credential exchange, sync and async, with refresh). Without a shared auth core, EDL logic now lives in at least two places and drifts. This package is the proposed single home; the obstore extra bridges to (not duplicates) obstore's provider.
-
-Stayed in earthaccess: everything else. `earthaccess/auth.py`, `system.py`, and `daac.py` are now re-export shims, `earthaccess/exceptions.py` re-exports the two login exceptions, and earthaccess depends on `earthaccess-auth`, so no import path broke and there is exactly one implementation. The earthaccess-side changes — shims, dependency edits, and the test split — are documented in [MIGRATION.md](MIGRATION.md).
+Downstream services and libraries commonly need EDL auth and nothing else from earthaccess. One concrete examples from the titiler ecosystem is `titiler-multidim`, which needs a bearer token string to inject into icechunk virtual chunk container headers. It deploys as an AWS Lambda zip, where earthaccess's transitive dependencies (s3fs, fsspec, python-cmr, pqdm, tenacity, ...) count against the 250 MB unpacked limit for the sake of ~500 lines of auth logic.
 
 ## Install matrix
 
@@ -36,6 +29,3 @@ auth = earthaccess_auth.login(strategy="environment")
 token = auth.token["access_token"]  # inject into icechunk http_store headers
 ```
 
-## Repo mechanics
-
-`earthaccess-auth` lives in its own repository, versioned and released independently of [earthaccess](https://github.com/earthaccess-dev/earthaccess) (which depends on it). The project is managed with [uv](https://docs.astral.sh/uv/); see [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
