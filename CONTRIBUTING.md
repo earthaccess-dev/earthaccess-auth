@@ -25,6 +25,15 @@ uv run ruff format .           # format
 uv run --group docs mkdocs serve   # live-preview the docs
 ```
 
+If you keep `UV_EXCLUDE_NEWER` set locally (e.g. to avoid resolving into a
+just-published release), scope it to commands that actually re-resolve
+(`uv lock`, `uv lock --upgrade`, `uv add`). A plain `uv sync` or `uv run`
+with that variable set will silently rewrite `uv.lock` to record the policy;
+since CI sets no such variable, the `uv-lock` hook and CI will then fail
+with "the lockfile needs to be updated". Prefer `uv sync --locked` /
+`uv run --locked` for routine work — they validate the lock instead of
+rewriting it.
+
 ## Pre-commit hooks
 
 Lint and hygiene checks run via [prek](https://prek.j178.dev/) (a drop-in,

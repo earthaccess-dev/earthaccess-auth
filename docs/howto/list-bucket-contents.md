@@ -7,7 +7,7 @@ credentials work at all.
 === "obstore"
 
     ```python
-    --8 < --"examples/list_bucket_contents_obstore.py"
+    --8<-- "examples/list_bucket_contents_obstore.py"
     ```
 
     [`obstore.list()`][obstore.list] returns a lazily-paginated stream: each
@@ -27,7 +27,7 @@ credentials work at all.
     [Get S3 credentials and bearer tokens](s3-credentials-and-bearer-token.md).
 
     ```python
-    --8 < --"examples/list_bucket_contents_s3fs.py"
+    --8<-- "examples/list_bucket_contents_s3fs.py"
     ```
 
     Unlike `obstore.list()`, `S3FileSystem.ls()` returns a single flat list
@@ -35,7 +35,7 @@ credentials work at all.
     collects the whole prefix into memory instead of paging through it.
 
 Both scripts live in
-[`examples/`](https://github.com/earthaccess-dev/earthaccess/tree/main/earthaccess-auth/examples)
+[`examples/`](https://github.com/earthaccess-dev/earthaccess-auth/tree/main/examples)
 and declare their own dependencies ([PEP 723](https://peps.python.org/pep-0723/)),
 so `uv run examples/list_bucket_contents_obstore.py` (or
 `uv run examples/list_bucket_contents_s3fs.py`) works standalone.

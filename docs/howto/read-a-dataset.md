@@ -15,7 +15,7 @@ call underneath doesn't change.
     `pip install earthaccess-auth[obstore] obspec-utils`.
 
     ```python
-    --8 < --"examples/read_a_dataset_obstore.py"
+    --8<-- "examples/read_a_dataset_obstore.py"
     ```
 
 === "s3fs (S3)"
@@ -26,7 +26,7 @@ call underneath doesn't change.
     adapter needed.
 
     ```python
-    --8 < --"examples/read_a_dataset_s3fs.py"
+    --8<-- "examples/read_a_dataset_s3fs.py"
     ```
 
 === "obspec-utils (HTTPS)"
@@ -42,7 +42,7 @@ call underneath doesn't change.
     file stays comparable across all four tabs.
 
     ```python
-    --8 < --"examples/read_a_dataset_obspec_utils.py"
+    --8<-- "examples/read_a_dataset_obspec_utils.py"
     ```
 
 === "fsspec (HTTPS)"
@@ -53,11 +53,11 @@ call underneath doesn't change.
     fsspec elsewhere.
 
     ```python
-    --8 < --"examples/read_a_dataset_fsspec.py"
+    --8<-- "examples/read_a_dataset_fsspec.py"
     ```
 
 All four scripts live in
-[`examples/`](https://github.com/earthaccess-dev/earthaccess/tree/main/earthaccess-auth/examples)
+[`examples/`](https://github.com/earthaccess-dev/earthaccess-auth/tree/main/examples)
 and declare their own dependencies ([PEP 723](https://peps.python.org/pep-0723/)),
 so e.g. `uv run examples/read_a_dataset_obstore.py` works standalone, no separate
 install step required.

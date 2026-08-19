@@ -6,6 +6,7 @@ behind optional extras.
 """
 
 import logging
+from importlib.metadata import version as _version
 
 from earthaccess_auth.auth import (
     Auth,
@@ -32,9 +33,12 @@ __all__ = [
     "S3CredentialsRequestFailure",
     "SessionWithHeaderRedirection",
     "System",
+    "__version__",
     "login",
     "netrc_path",
 ]
+
+__version__ = _version("earthaccess-auth")
 
 logger = logging.getLogger(__name__)
 
