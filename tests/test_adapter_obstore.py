@@ -54,8 +54,8 @@ def test_s3_credential_provider_wires_token_and_endpoint() -> None:
     assert request.url.startswith(endpoint)
     assert request.headers["Authorization"] == "Bearer test-token-abc"
     assert credentials["access_key_id"] == "AKIDEXAMPLE"
-    assert credentials["secret_access_key"] == "secret"  # noqa: S105
-    assert credentials["token"] == "session-token"  # noqa: S105
+    assert credentials["secret_access_key"] == "secret"
+    assert credentials["token"] == "session-token"
 
 
 def test_http_client_options_accepted_by_obstore() -> None:
@@ -102,8 +102,8 @@ class StubManager:
         self.requested.append(endpoint)
         return S3Credentials(
             access_key_id="AKID",
-            secret_access_key="SECRET",  # noqa: S106
-            session_token="TOKEN",  # noqa: S106
+            secret_access_key="SECRET",
+            session_token="TOKEN",
             expires_at=EXPIRES,
         )
 

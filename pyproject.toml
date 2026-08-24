@@ -41,6 +41,9 @@ fsspec = [
 obstore = [
   "obstore >=0.9",
 ]
+icechunk = [
+  "icechunk >=2.1",
+]
 
 [dependency-groups]
 test = [
@@ -52,7 +55,7 @@ typecheck = [
   "mypy >=1.15",
   "types-requests >=2.26",
   # so mypy can follow the optional adapter imports
-  "earthaccess-auth[fsspec,obstore]",
+  "earthaccess-auth[fsspec,obstore,icechunk]",
 ]
 docs = [
   "mkdocs >=1.2,!=1.6.0,<2.0",
@@ -61,7 +64,7 @@ docs = [
   "pymdown-extensions >=9.2",
   "pygments >=2.11.1",
   # so mkdocstrings can import adapters.fsspec / adapters.obstore for their docstrings
-  "earthaccess-auth[fsspec,obstore]",
+  "earthaccess-auth[fsspec,obstore,icechunk]",
 ]
 dev = [
   { include-group = "test" },
@@ -131,7 +134,7 @@ ignore = [
 combine-as-imports = true
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = ["PLR2004", "FBT", "INP001", "SLF001", "S101", "S108", "S301", "S603", "S607"]
+"tests/**/*.py" = ["PLR2004", "FBT", "INP001", "SLF001", "S101", "S105", "S106", "S108", "S301", "S603", "S607", "ARG001"]
 "scripts/**/*.py" = ["INP001"]
 "examples/**/*.py" = ["INP001", "T201"]
 

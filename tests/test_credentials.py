@@ -49,8 +49,8 @@ def test_fetch_parses_credentials_and_space_separated_expiration() -> None:
     creds = fetch_s3_credentials(make_auth(), ENDPOINT)
     assert creds == S3Credentials(
         access_key_id="AKID",
-        secret_access_key="SECRET",  # noqa: S106
-        session_token="TOKEN",  # noqa: S106
+        secret_access_key="SECRET",
+        session_token="TOKEN",
         expires_at=datetime(2026, 8, 24, 12, tzinfo=UTC),
     )
 
