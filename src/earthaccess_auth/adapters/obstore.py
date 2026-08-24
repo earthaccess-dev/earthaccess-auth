@@ -1,10 +1,11 @@
 """obstore integration (extra: earthaccess-auth[obstore]).
 
 This module provides both a new native obstore-protocol credential provider
-([`EarthdataS3CredentialProvider`]) and re-exports of obstore's own
-EDL-to-S3 credential exchange for compatibility. The native provider is the
-recommended way to integrate with obstore, as it needs no obstore import
-and shares the process-wide credential cache.
+([`EarthdataS3CredentialProvider`][earthaccess_auth.adapters.obstore.EarthdataS3CredentialProvider])
+and re-exports of obstore's own EDL-to-S3 credential exchange for
+compatibility. The native provider is the recommended way to integrate with
+obstore, as it avoids any hard coupling to obstore's types or versions and
+shares the process-wide credential cache.
 
 Also adds an HTTP-headers helper for the cases the credential provider
 doesn't cover.
@@ -42,10 +43,12 @@ class EarthdataS3CredentialProvider:
 
     Implements obstore's *structural* `S3CredentialProvider` protocol — a
     callable returning the credential dict, plus a `config` attribute
-    carrying the region — so it needs no obstore import and works with any
-    obstore version that accepts custom providers. obstore re-invokes the
-    provider itself once `expires_at` passes; the shared credential
-    manager behind it deduplicates those fetches across stores.
+    carrying the region — so this class avoids any hard coupling to
+    obstore's types or versions and works with any obstore version that
+    accepts custom providers. (The module itself still requires the
+    `obstore` extra, because of the top-level re-exports below.) obstore
+    re-invokes the provider itself once `expires_at` passes; the shared
+    credential manager behind it deduplicates those fetches across stores.
     """
 
     def __init__(

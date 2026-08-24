@@ -25,7 +25,11 @@ class S3CredentialsEndpointUnresolved(Exception):  # noqa: N818
 
     This happens when the given `daac`/`provider` isn't in the DAAC
     registry, or the DAAC has no cloud collections and therefore no
-    `s3credentials` URL.
+    `s3credentials` URL. It is also raised when a bucket name or `s3://`
+    URL isn't in the CMR-derived `BUCKET_REGISTRY`, by
+    `credentials.S3CredentialManager.credentials_for_bucket`,
+    `adapters.obstore.EarthdataS3CredentialProvider.for_bucket`, and
+    `adapters.icechunk`.
     """
 
 

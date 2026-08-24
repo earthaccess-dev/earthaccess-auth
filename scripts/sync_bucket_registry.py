@@ -263,7 +263,10 @@ def main() -> None:
     parser.add_argument(
         "--check",
         action="store_true",
-        help="Diff the sweep against the vendored BUCKET_ENDPOINTS and exit 1 on drift.",
+        help=(
+            "Diff the sweep against the vendored BUCKET_REGISTRY (endpoints "
+            "+ regions) and exit 1 on drift."
+        ),
     )
     parser.add_argument(
         "--page-size",

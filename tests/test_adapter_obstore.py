@@ -4,7 +4,6 @@ import pytest
 import responses
 
 from earthaccess_auth import Auth
-from earthaccess_auth.adapters.obstore import EarthdataS3CredentialProvider
 from earthaccess_auth.credentials import S3Credentials
 from earthaccess_auth.exceptions import S3CredentialsEndpointUnresolved
 
@@ -109,6 +108,10 @@ class StubManager:
 
 
 def test_provider_returns_obstore_credential_shape() -> None:
+    from earthaccess_auth.adapters.obstore import (  # noqa: PLC0415
+        EarthdataS3CredentialProvider,
+    )
+
     manager = StubManager()
     provider = EarthdataS3CredentialProvider(
         "https://archive.podaac.earthdata.nasa.gov/s3credentials",
@@ -127,6 +130,10 @@ def test_provider_returns_obstore_credential_shape() -> None:
 
 
 def test_provider_for_bucket_resolves_registry() -> None:
+    from earthaccess_auth.adapters.obstore import (  # noqa: PLC0415
+        EarthdataS3CredentialProvider,
+    )
+
     provider = EarthdataS3CredentialProvider.for_bucket(
         "s3://lp-prod-protected/HLS/x.tif", manager=StubManager()
     )
@@ -135,5 +142,9 @@ def test_provider_for_bucket_resolves_registry() -> None:
 
 
 def test_provider_for_bucket_unknown_raises() -> None:
+    from earthaccess_auth.adapters.obstore import (  # noqa: PLC0415
+        EarthdataS3CredentialProvider,
+    )
+
     with pytest.raises(S3CredentialsEndpointUnresolved, match="not-a-real-bucket"):
         EarthdataS3CredentialProvider.for_bucket("not-a-real-bucket")

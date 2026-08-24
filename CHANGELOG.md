@@ -12,11 +12,6 @@ changelog for history predating the extraction.
 
 ### Added
 
-- Initial release. Extracted from `earthaccess`: EDL login (`login`, `Auth`),
-  the DAAC registry, systems (`PROD`/`UAT`), and the two login exceptions.
-  Optional `fsspec` and `obstore` extras add an authenticated HTTPS session
-  and an S3 credential provider, respectively.
-  ([#1423](https://github.com/earthaccess-dev/earthaccess/pull/1423))
 - Added `earthaccess_auth.credentials`: `fetch_s3_credentials`,
   `S3Credentials`, thread-safe per-endpoint `S3CredentialManager`, and a
   process-wide `default_manager()` (non-interactive login only).
@@ -29,6 +24,16 @@ changelog for history predating the extraction.
 - Added `adapters.icechunk` (extra: `earthaccess-auth[icechunk]`) with
   picklable refreshable S3 credentials for icechunk stores and virtual
   chunk containers.
+
+## [0.1.0] - 2026-08-19
+
+### Added
+
+- Initial release. Extracted from `earthaccess`: EDL login (`login`, `Auth`),
+  the DAAC registry, systems (`PROD`/`UAT`), and the two login exceptions.
+  Optional `fsspec` and `obstore` extras add an authenticated HTTPS session
+  and an S3 credential provider, respectively.
+  ([#1423](https://github.com/earthaccess-dev/earthaccess/pull/1423))
 
 ### Changed
 
@@ -47,3 +52,4 @@ Behavior differences from the implementation extracted out of `earthaccess`:
 - Python 3.12 or newer is required.
 
 [Unreleased]: https://github.com/earthaccess-dev/earthaccess-auth/commits/main/
+[0.1.0]: https://github.com/earthaccess-dev/earthaccess-auth/releases/tag/v0.1.0
