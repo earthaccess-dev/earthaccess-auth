@@ -1,7 +1,12 @@
+from datetime import UTC, datetime
+
 import pytest
 import responses
 
 from earthaccess_auth import Auth
+from earthaccess_auth.adapters.obstore import EarthdataS3CredentialProvider
+from earthaccess_auth.credentials import S3Credentials
+from earthaccess_auth.exceptions import S3CredentialsEndpointUnresolved
 
 obstore = pytest.importorskip("obstore")
 
@@ -84,3 +89,51 @@ def test_http_client_options_rejects_unauthenticated_auth() -> None:
 
     with pytest.raises(ValueError, match="authenticated"):
         http_client_options(Auth())
+
+
+EXPIRES = datetime(2026, 8, 24, 12, tzinfo=UTC)
+
+
+class StubManager:
+    def __init__(self) -> None:
+        self.requested: list[str] = []
+
+    def credentials_for(self, endpoint: str) -> S3Credentials:
+        self.requested.append(endpoint)
+        return S3Credentials(
+            access_key_id="AKID",
+            secret_access_key="SECRET",  # noqa: S106
+            session_token="TOKEN",  # noqa: S106
+            expires_at=EXPIRES,
+        )
+
+
+def test_provider_returns_obstore_credential_shape() -> None:
+    manager = StubManager()
+    provider = EarthdataS3CredentialProvider(
+        "https://archive.podaac.earthdata.nasa.gov/s3credentials",
+        manager=manager,
+    )
+    assert provider() == {
+        "access_key_id": "AKID",
+        "secret_access_key": "SECRET",
+        "token": "TOKEN",
+        "expires_at": EXPIRES,
+    }
+    assert provider.config == {"region": "us-west-2"}
+    assert manager.requested == [
+        "https://archive.podaac.earthdata.nasa.gov/s3credentials"
+    ]
+
+
+def test_provider_for_bucket_resolves_registry() -> None:
+    provider = EarthdataS3CredentialProvider.for_bucket(
+        "s3://lp-prod-protected/HLS/x.tif", manager=StubManager()
+    )
+    provider()
+    assert provider.config == {"region": "us-west-2"}
+
+
+def test_provider_for_bucket_unknown_raises() -> None:
+    with pytest.raises(S3CredentialsEndpointUnresolved, match="not-a-real-bucket"):
+        EarthdataS3CredentialProvider.for_bucket("not-a-real-bucket")
