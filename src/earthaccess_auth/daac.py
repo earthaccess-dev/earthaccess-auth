@@ -1,6 +1,7 @@
 # DAACS ~= NASA Earthdata data centers
 
-from typing import TypedDict
+from typing import NamedTuple, TypedDict
+from urllib.parse import urlparse
 
 import requests
 
@@ -140,7 +141,14 @@ DAAC_TEST_URLS = [
 ]
 
 
-# S3 bucket name -> `s3credentials` endpoint. Sourced from CMR's
+class BucketInfo(NamedTuple):
+    """One CMR-registered bucket's `s3credentials` endpoint and AWS region."""
+
+    endpoint: str
+    region: str
+
+
+# S3 bucket name -> `s3credentials` endpoint and region. Sourced from CMR's
 # `DirectDistributionInformation.S3BucketAndObjectPrefixNames` /
 # `S3CredentialsAPIEndpoint` fields (see
 # `earthaccess-auth/scripts/sync_bucket_registry.py` and
@@ -164,44 +172,130 @@ DAAC_TEST_URLS = [
 #   that GHRC and OB.DAAC publish in *production* CMR. They're kept
 #   because the bucket and its endpoint are consistently paired, so
 #   resolving one to the other is still correct.
-BUCKET_ENDPOINTS: dict[str, str] = {
-    "asdc-prod-protected": "https://data.asdc.earthdata.nasa.gov/s3credentials",
-    "asdc2-prod-protected": "https://data.asdc.earthdata.nasa.gov/s3credentials",
-    "asf-cumulus-prod-alos2-products": "https://cumulus.asf.earthdatacloud.nasa.gov/s3credentials",
-    "asf-cumulus-prod-aria-browse": "https://cumulus.asf.earthdatacloud.nasa.gov/s3credentials",
-    "asf-cumulus-prod-aria-products": "https://cumulus.asf.earthdatacloud.nasa.gov/s3credentials",
-    "asf-cumulus-prod-ecmwf": "https://cumulus.asf.earthdatacloud.nasa.gov/s3credentials",
-    "asf-cumulus-prod-opera-browse": "https://cumulus.asf.alaska.edu/s3credentials",
-    "asf-cumulus-prod-opera-products": "https://cumulus.asf.alaska.edu/s3credentials",
-    "asf-cumulus-prod-seasat-products": "https://cumulus.asf.earthdatacloud.nasa.gov/s3credentials",
-    "asf-ngap2w-p-s1-grd-7d1b4348": "https://sentinel1.asf.alaska.edu/s3credentials",
-    "asf-ngap2w-p-s1-ocn-1e29d408": "https://sentinel1.asf.alaska.edu/s3credentials",
-    "asf-ngap2w-p-s1-raw-98779950": "https://sentinel1.asf.alaska.edu/s3credentials",
-    "asf-ngap2w-p-s1-slc-7b420b89": "https://sentinel1.asf.alaska.edu/s3credentials",
-    "asf-ngap2w-p-s1-xml-8cf7476b": "https://sentinel1.asf.alaska.edu/s3credentials",
-    "csda-cumulus-prod-protected-5047": "https://data.csdap.earthdata.nasa.gov/s3credentials",
-    "gesdisc-cumulus-prod-protected": "https://data.gesdisc.earthdata.nasa.gov/s3credentials",
-    "ghrcw-protected": "https://data.ghrc.earthdata.nasa.gov/s3credentials",
-    "ghrcwuat-protected": "https://data.ghrc.uat.earthdata.nasa.gov/s3credentials",
-    "lp-prod-protected": "https://data.lpdaac.earthdatacloud.nasa.gov/s3credentials",
-    "lp-prod-public": "https://data.lpdaac.earthdatacloud.nasa.gov/s3credentials",
-    "lp-protected": "https://data.lpdaac.earthdatacloud.nasa.gov/s3credentials",
-    "lp-public": "https://data.lpdaac.earthdatacloud.nasa.gov/s3credentials",
-    "nsidc-cumulus-prod-protected": "https://data.nsidc.earthdatacloud.nasa.gov/s3credentials",
-    "nsidc-cumulus-prod-public": "https://data.nsidc.earthdatacloud.nasa.gov/s3credentials",
-    "ob-cumulus-prod-public": "https://obdaac-tea.earthdatacloud.nasa.gov/s3credentials",
-    "ob-cumulus-sit-public": "https://obdaac-tea.sit.earthdatacloud.nasa.gov/s3credentials",
-    "ornl-cumulus-prod-protected": "https://data.ornldaac.earthdata.nasa.gov/s3credentials",
-    "ornl-cumulus-prod-public": "https://data.ornldaac.earthdata.nasa.gov/s3credentials",
-    "podaac-ops-cumulus-docs": "https://archive.podaac.earthdata.nasa.gov/s3credentials",
-    "podaac-ops-cumulus-protected": "https://archive.podaac.earthdata.nasa.gov/s3credentials",
-    "podaac-ops-cumulus-public": "https://archive.podaac.earthdata.nasa.gov/s3credentials",
-    "podaac-swot-ops-cumulus-protected": "https://archive.swot.podaac.earthdata.nasa.gov/s3credentials",
-    "podaac-swot-ops-cumulus-public": "https://archive.swot.podaac.earthdata.nasa.gov/s3credentials",
-    "prod-lads": "https://data.laadsdaac.earthdatacloud.nasa.gov/s3credentials",
-    "sds-n-cumulus-prod-nisar-products": "https://nisar.asf.earthdatacloud.nasa.gov/s3credentials",
-    "sds-n-cumulus-prod-nisar-ur-products": "https://nisar.asf.earthdatacloud.nasa.gov/s3credentials",
+#
+# The region comes from the same DirectDistributionInformation block's
+# `Region` field; every bucket in the 2026-08-18 sweep reported
+# `us-west-2` (NASA Earthdata Cloud is single-region today). The
+# scheduled `sync_bucket_registry.py --check` job diffs regions too, so
+# a bucket moving regions shows up as drift rather than a runtime bug.
+BUCKET_REGISTRY: dict[str, BucketInfo] = {
+    "asdc-prod-protected": BucketInfo(
+        "https://data.asdc.earthdata.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "asdc2-prod-protected": BucketInfo(
+        "https://data.asdc.earthdata.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "asf-cumulus-prod-alos2-products": BucketInfo(
+        "https://cumulus.asf.earthdatacloud.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "asf-cumulus-prod-aria-browse": BucketInfo(
+        "https://cumulus.asf.earthdatacloud.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "asf-cumulus-prod-aria-products": BucketInfo(
+        "https://cumulus.asf.earthdatacloud.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "asf-cumulus-prod-ecmwf": BucketInfo(
+        "https://cumulus.asf.earthdatacloud.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "asf-cumulus-prod-opera-browse": BucketInfo(
+        "https://cumulus.asf.alaska.edu/s3credentials", "us-west-2"
+    ),
+    "asf-cumulus-prod-opera-products": BucketInfo(
+        "https://cumulus.asf.alaska.edu/s3credentials", "us-west-2"
+    ),
+    "asf-cumulus-prod-seasat-products": BucketInfo(
+        "https://cumulus.asf.earthdatacloud.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "asf-ngap2w-p-s1-grd-7d1b4348": BucketInfo(
+        "https://sentinel1.asf.alaska.edu/s3credentials", "us-west-2"
+    ),
+    "asf-ngap2w-p-s1-ocn-1e29d408": BucketInfo(
+        "https://sentinel1.asf.alaska.edu/s3credentials", "us-west-2"
+    ),
+    "asf-ngap2w-p-s1-raw-98779950": BucketInfo(
+        "https://sentinel1.asf.alaska.edu/s3credentials", "us-west-2"
+    ),
+    "asf-ngap2w-p-s1-slc-7b420b89": BucketInfo(
+        "https://sentinel1.asf.alaska.edu/s3credentials", "us-west-2"
+    ),
+    "asf-ngap2w-p-s1-xml-8cf7476b": BucketInfo(
+        "https://sentinel1.asf.alaska.edu/s3credentials", "us-west-2"
+    ),
+    "csda-cumulus-prod-protected-5047": BucketInfo(
+        "https://data.csdap.earthdata.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "gesdisc-cumulus-prod-protected": BucketInfo(
+        "https://data.gesdisc.earthdata.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "ghrcw-protected": BucketInfo(
+        "https://data.ghrc.earthdata.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "ghrcwuat-protected": BucketInfo(
+        "https://data.ghrc.uat.earthdata.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "lp-prod-protected": BucketInfo(
+        "https://data.lpdaac.earthdatacloud.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "lp-prod-public": BucketInfo(
+        "https://data.lpdaac.earthdatacloud.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "lp-protected": BucketInfo(
+        "https://data.lpdaac.earthdatacloud.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "lp-public": BucketInfo(
+        "https://data.lpdaac.earthdatacloud.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "nsidc-cumulus-prod-protected": BucketInfo(
+        "https://data.nsidc.earthdatacloud.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "nsidc-cumulus-prod-public": BucketInfo(
+        "https://data.nsidc.earthdatacloud.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "ob-cumulus-prod-public": BucketInfo(
+        "https://obdaac-tea.earthdatacloud.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "ob-cumulus-sit-public": BucketInfo(
+        "https://obdaac-tea.sit.earthdatacloud.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "ornl-cumulus-prod-protected": BucketInfo(
+        "https://data.ornldaac.earthdata.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "ornl-cumulus-prod-public": BucketInfo(
+        "https://data.ornldaac.earthdata.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "podaac-ops-cumulus-docs": BucketInfo(
+        "https://archive.podaac.earthdata.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "podaac-ops-cumulus-protected": BucketInfo(
+        "https://archive.podaac.earthdata.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "podaac-ops-cumulus-public": BucketInfo(
+        "https://archive.podaac.earthdata.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "podaac-swot-ops-cumulus-protected": BucketInfo(
+        "https://archive.swot.podaac.earthdata.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "podaac-swot-ops-cumulus-public": BucketInfo(
+        "https://archive.swot.podaac.earthdata.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "prod-lads": BucketInfo(
+        "https://data.laadsdaac.earthdatacloud.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "sds-n-cumulus-prod-nisar-products": BucketInfo(
+        "https://nisar.asf.earthdatacloud.nasa.gov/s3credentials", "us-west-2"
+    ),
+    "sds-n-cumulus-prod-nisar-ur-products": BucketInfo(
+        "https://nisar.asf.earthdatacloud.nasa.gov/s3credentials", "us-west-2"
+    ),
 }
+
+BUCKET_ENDPOINTS: dict[str, str] = {
+    bucket: info.endpoint for bucket, info in BUCKET_REGISTRY.items()
+}
+"""Bucket name -> `s3credentials` endpoint, derived from
+[`BUCKET_REGISTRY`][earthaccess_auth.daac.BUCKET_REGISTRY] (kept for
+backwards compatibility; new code should prefer the registry, which also
+carries the region)."""
 
 
 def find_endpoint_by_bucket(bucket: str) -> str | None:
@@ -222,6 +316,28 @@ def find_endpoint_by_bucket(bucket: str) -> str | None:
         isn't in [`BUCKET_ENDPOINTS`][earthaccess_auth.daac.BUCKET_ENDPOINTS].
     """
     return BUCKET_ENDPOINTS.get(bucket)
+
+
+def resolve_bucket(bucket_or_url: str) -> BucketInfo | None:
+    """Resolve a bucket name or `s3://` URL to its registry entry.
+
+    Parameters:
+        bucket_or_url: A bare S3 bucket name (`"podaac-ops-cumulus-protected"`)
+            or a full `s3://bucket/key` URL.
+
+    Returns:
+        The bucket's [`BucketInfo`][earthaccess_auth.daac.BucketInfo]
+        (endpoint + region), or `None` when the bucket isn't in the
+        registry or the URL uses a non-`s3://` scheme.
+    """
+    parsed = urlparse(bucket_or_url)
+    if parsed.scheme == "s3":
+        bucket = parsed.netloc
+    elif parsed.scheme:
+        return None
+    else:
+        bucket = bucket_or_url
+    return BUCKET_REGISTRY.get(bucket)
 
 
 def find_provider(
