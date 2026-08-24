@@ -11,6 +11,29 @@
       inherited_members: true
       show_root_heading: true
 
+## Credentials
+
+::: earthaccess_auth.S3Credentials
+    options:
+      show_root_heading: true
+
+::: earthaccess_auth.fetch_s3_credentials
+    options:
+      show_root_heading: true
+
+::: earthaccess_auth.S3CredentialManager
+    options:
+      inherited_members: true
+      show_root_heading: true
+
+::: earthaccess_auth.default_manager
+    options:
+      show_root_heading: true
+
+::: earthaccess_auth.set_default_auth
+    options:
+      show_root_heading: true
+
 ## DAAC registry
 
 ::: earthaccess_auth.daac.DAACS
@@ -32,6 +55,19 @@
       show_attribute_values: false
 
 ::: earthaccess_auth.daac.find_endpoint_by_bucket
+    options:
+      show_root_heading: true
+
+::: earthaccess_auth.daac.BucketInfo
+    options:
+      show_root_heading: true
+
+::: earthaccess_auth.daac.BUCKET_REGISTRY
+    options:
+      show_root_heading: true
+      show_attribute_values: false
+
+::: earthaccess_auth.daac.resolve_bucket
     options:
       show_root_heading: true
 
@@ -78,10 +114,24 @@ reaches production.
 
 ### obstore (extra: `earthaccess-auth[obstore]`)
 
+::: earthaccess_auth.adapters.obstore.EarthdataS3CredentialProvider
+    options:
+      show_root_heading: true
+
 ::: earthaccess_auth.adapters.obstore.s3_credential_provider
     options:
       show_root_heading: true
 
 ::: earthaccess_auth.adapters.obstore.http_client_options
+    options:
+      show_root_heading: true
+
+### icechunk (extra: `earthaccess-auth[icechunk]`)
+
+::: earthaccess_auth.adapters.icechunk.get_credentials_callable
+    options:
+      show_root_heading: true
+
+::: earthaccess_auth.adapters.icechunk.s3_refreshable_credentials_for
     options:
       show_root_heading: true

@@ -17,6 +17,18 @@ changelog for history predating the extraction.
   Optional `fsspec` and `obstore` extras add an authenticated HTTPS session
   and an S3 credential provider, respectively.
   ([#1423](https://github.com/earthaccess-dev/earthaccess/pull/1423))
+- Added `earthaccess_auth.credentials`: `fetch_s3_credentials`,
+  `S3Credentials`, thread-safe per-endpoint `S3CredentialManager`, and a
+  process-wide `default_manager()` (non-interactive login only).
+- `daac.BUCKET_REGISTRY` now vendors each bucket's AWS region alongside
+  its `s3credentials` endpoint; `daac.resolve_bucket()` resolves bucket
+  names and `s3://` URLs. `BUCKET_ENDPOINTS` is unchanged (now derived).
+- Added `adapters.obstore.EarthdataS3CredentialProvider`, implementing
+  obstore's structural credential-provider protocol without importing
+  obstore; `adapters.obstore.s3_credential_provider` is deprecated.
+- Added `adapters.icechunk` (extra: `earthaccess-auth[icechunk]`) with
+  picklable refreshable S3 credentials for icechunk stores and virtual
+  chunk containers.
 
 ### Changed
 

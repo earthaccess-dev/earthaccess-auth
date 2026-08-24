@@ -52,7 +52,7 @@ def get_credentials_callable(
     """Build a picklable zero-argument callable for icechunk's credential hooks.
 
     Suitable for `icechunk.s3_storage(get_credentials=...)` and
-    [`icechunk.s3_refreshable_credentials`][]. icechunk re-invokes it when
+    `icechunk.s3_refreshable_credentials`. icechunk re-invokes it when
     the returned credentials' `expires_after` passes.
 
     Parameters:

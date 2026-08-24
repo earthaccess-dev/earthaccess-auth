@@ -13,6 +13,13 @@ from earthaccess_auth.auth import (
     SessionWithHeaderRedirection,
     netrc_path,
 )
+from earthaccess_auth.credentials import (
+    S3CredentialManager,
+    S3Credentials,
+    default_manager,
+    fetch_s3_credentials,
+    set_default_auth,
+)
 from earthaccess_auth.daac import DAACS
 from earthaccess_auth.exceptions import (
     LoginAttemptFailure,
@@ -29,13 +36,18 @@ __all__ = [
     "Auth",
     "LoginAttemptFailure",
     "LoginStrategyUnavailable",
+    "S3CredentialManager",
+    "S3Credentials",
     "S3CredentialsEndpointUnresolved",
     "S3CredentialsRequestFailure",
     "SessionWithHeaderRedirection",
     "System",
     "__version__",
+    "default_manager",
+    "fetch_s3_credentials",
     "login",
     "netrc_path",
+    "set_default_auth",
 ]
 
 __version__ = _version("earthaccess-auth")
