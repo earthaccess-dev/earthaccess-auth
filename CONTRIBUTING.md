@@ -52,8 +52,8 @@ commands above locally covers everything CI will check.
 
 ## Ground rules
 
-- Keep the core's runtime dependencies minimal (`requests`, `tinynetrc`,
-  `typing_extensions` — nothing else). Anything heavier belongs behind an
+- Keep the core's runtime dependencies minimal (`requests`, `tinynetrc` —
+  nothing else). Anything heavier belongs behind an
   optional extra under `earthaccess_auth.adapters`.
   `tests/test_import_guard.py` enforces this.
 - Public API must stay importable and typed; mypy runs in `strict` mode.

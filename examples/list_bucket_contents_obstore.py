@@ -13,13 +13,12 @@ import obstore
 from obstore.store import S3Store
 
 import earthaccess_auth
-from earthaccess_auth.adapters.obstore import s3_credential_provider
+from earthaccess_auth.adapters.obstore import EarthdataS3CredentialProvider
 
-auth = earthaccess_auth.login()
+earthaccess_auth.set_default_auth(earthaccess_auth.login())
 
-credential_provider = s3_credential_provider(
-    auth,
-    credentials_endpoint="https://data.ornldaac.earthdata.nasa.gov/s3credentials",
+credential_provider = EarthdataS3CredentialProvider(
+    "https://data.ornldaac.earthdata.nasa.gov/s3credentials",
 )
 store = S3Store(
     "ornl-cumulus-prod-protected",

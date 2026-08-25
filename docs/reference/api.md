@@ -118,10 +118,6 @@ reaches production.
     options:
       show_root_heading: true
 
-::: earthaccess_auth.adapters.obstore.s3_credential_provider
-    options:
-      show_root_heading: true
-
 ::: earthaccess_auth.adapters.obstore.http_client_options
     options:
       show_root_heading: true

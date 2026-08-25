@@ -20,10 +20,18 @@ changelog for history predating the extraction.
   names and `s3://` URLs. `BUCKET_ENDPOINTS` is unchanged (now derived).
 - Added `adapters.obstore.EarthdataS3CredentialProvider`, implementing
   obstore's structural credential-provider protocol without importing
-  obstore; `adapters.obstore.s3_credential_provider` is deprecated.
+  obstore.
 - Added `adapters.icechunk` (extra: `earthaccess-auth[icechunk]`) with
   picklable refreshable S3 credentials for icechunk stores and virtual
   chunk containers.
+
+### Removed
+
+- **Breaking:** removed `adapters.obstore.s3_credential_provider`; use
+  `adapters.obstore.EarthdataS3CredentialProvider`, which needs no obstore
+  import and shares the process-wide credential cache.
+- **Breaking:** removed `Auth.refresh_tokens()`; it has no replacement, as
+  tokens are refreshed automatically.
 
 ## [0.1.0] - 2026-08-19
 

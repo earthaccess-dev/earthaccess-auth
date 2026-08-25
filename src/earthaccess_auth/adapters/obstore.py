@@ -20,7 +20,6 @@ from obstore.auth.earthdata import (  # noqa: F401
     NasaEarthdataAsyncCredentialProvider,
     NasaEarthdataCredentialProvider,
 )
-from typing_extensions import deprecated
 
 from earthaccess_auth.auth import Auth
 from earthaccess_auth.credentials import S3Credentials, default_manager
@@ -107,46 +106,6 @@ class EarthdataS3CredentialProvider:
             "token": creds.session_token,
             "expires_at": creds.expires_at,
         }
-
-
-@deprecated(
-    "Use EarthdataS3CredentialProvider instead; it needs no obstore import "
-    "and shares the process-wide credential cache."
-)
-def s3_credential_provider(
-    auth: Auth,
-    credentials_endpoint: str,
-) -> NasaEarthdataCredentialProvider:
-    """Build an obstore credential provider that refreshes EDL-issued S3 credentials.
-
-    Hand this to [`obstore.store.S3Store`][]`(credential_provider=...)` instead of
-    a one-shot credentials dict, so a long-running job doesn't need its own
-    refresh loop — the provider re-authenticates with EDL once the current
-    credentials near expiry.
-
-    Parameters:
-        auth: An authenticated `Auth` instance.
-        credentials_endpoint: A DAAC's `s3credentials` URL, e.g. the
-            `"s3-credentials"` field on an entry in
-            [`DAACS`][earthaccess_auth.daac.DAACS].
-
-    Returns:
-        A credential provider usable as [`obstore.store.S3Store`][]'s
-        `credential_provider` argument.
-
-    Raises:
-        ValueError: If `auth` has not been authenticated (`auth.token is None`).
-    """
-    if auth.token is None:
-        msg = "auth must be authenticated before use"
-        raise ValueError(msg)
-    # obstore 0.9.2's NasaEarthdataCredentialProvider takes the credentials
-    # URL positionally plus a keyword-only `auth` (bearer token string,
-    # (username, password) tuple, or None) — there is no `token=` keyword.
-    return NasaEarthdataCredentialProvider(
-        credentials_endpoint,
-        auth=auth.token["access_token"],
-    )
 
 
 def http_client_options(auth: Auth) -> dict[str, Any]:

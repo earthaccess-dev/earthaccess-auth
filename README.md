@@ -14,7 +14,7 @@ Downstream services and libraries commonly need EDL auth and nothing else from e
 ## Install matrix
 
 ```
-pip install earthaccess-auth            # requests + tinynetrc + typing_extensions only
+pip install earthaccess-auth            # requests + tinynetrc only
 pip install earthaccess-auth[fsspec]    # + fsspec/aiohttp HTTPS session
 pip install earthaccess-auth[obstore]   # + obstore credential provider bridge
 pip install earthaccess                 # full stack (does not yet depend on this package)
