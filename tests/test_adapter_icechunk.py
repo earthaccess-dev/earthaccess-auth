@@ -17,7 +17,7 @@ class StubManager:
     def __init__(self) -> None:
         self.requested: list[str] = []
 
-    def credentials_for(self, endpoint: str) -> S3Credentials:
+    def get_credentials(self, endpoint: str) -> S3Credentials:
         self.requested.append(endpoint)
         return S3Credentials(
             access_key_id="AKID",
@@ -78,8 +78,8 @@ def test_unknown_bucket_raises() -> None:
 
 def test_refreshable_credentials_wrapper(stub_manager: StubManager) -> None:
     from earthaccess_auth.adapters.icechunk import (  # noqa: PLC0415
-        s3_refreshable_credentials_for,
+        earthdata_s3_credentials,
     )
 
-    refreshable = s3_refreshable_credentials_for(ENDPOINT)
+    refreshable = earthdata_s3_credentials(ENDPOINT)
     assert isinstance(refreshable, icechunk.S3Credentials.Refreshable)

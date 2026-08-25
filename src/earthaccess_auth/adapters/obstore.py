@@ -34,7 +34,7 @@ class _CredentialSource(Protocol):
     test stubs — mirroring how obstore itself duck-types providers.
     """
 
-    def credentials_for(self, endpoint: str) -> S3Credentials: ...
+    def get_credentials(self, endpoint: str) -> S3Credentials: ...
 
 
 class EarthdataS3CredentialProvider:
@@ -99,7 +99,7 @@ class EarthdataS3CredentialProvider:
     def __call__(self) -> dict[str, Any]:
         """Fetch credentials in obstore's `S3Credential` dict shape."""
         manager = self._manager if self._manager is not None else default_manager()
-        creds = manager.credentials_for(self._endpoint)
+        creds = manager.get_credentials(self._endpoint)
         return {
             "access_key_id": creds.access_key_id,
             "secret_access_key": creds.secret_access_key,

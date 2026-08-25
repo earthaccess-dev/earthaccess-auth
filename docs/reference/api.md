@@ -128,6 +128,6 @@ reaches production.
     options:
       show_root_heading: true
 
-::: earthaccess_auth.adapters.icechunk.s3_refreshable_credentials_for
+::: earthaccess_auth.adapters.icechunk.earthdata_s3_credentials
     options:
       show_root_heading: true

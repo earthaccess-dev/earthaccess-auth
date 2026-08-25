@@ -47,7 +47,7 @@ class StubManager:
     def __init__(self) -> None:
         self.requested: list[str] = []
 
-    def credentials_for(self, endpoint: str) -> S3Credentials:
+    def get_credentials(self, endpoint: str) -> S3Credentials:
         self.requested.append(endpoint)
         return S3Credentials(
             access_key_id="AKID",

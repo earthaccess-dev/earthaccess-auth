@@ -37,7 +37,7 @@ def _resolve_endpoint(bucket_or_endpoint: str) -> str:
 
 
 def _fetch_static_credentials(endpoint: str) -> icechunk.S3StaticCredentials:
-    creds = default_manager().credentials_for(endpoint)
+    creds = default_manager().get_credentials(endpoint)
     return icechunk.S3StaticCredentials(
         access_key_id=creds.access_key_id,
         secret_access_key=creds.secret_access_key,
@@ -67,7 +67,7 @@ def get_credentials_callable(
     return partial(_fetch_static_credentials, _resolve_endpoint(bucket_or_endpoint))
 
 
-def s3_refreshable_credentials_for(
+def earthdata_s3_credentials(
     bucket_or_endpoint: str,
 ) -> icechunk.S3Credentials.Refreshable:
     """Build a refreshable icechunk credential, e.g. for virtual chunk containers.

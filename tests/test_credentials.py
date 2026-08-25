@@ -67,8 +67,8 @@ def test_manager_caches_per_endpoint() -> None:
     future = (datetime.now(UTC) + timedelta(hours=1)).isoformat()
     responses.add(responses.GET, ENDPOINT, json=creds_json(future))
     manager = S3CredentialManager(make_auth())
-    first = manager.credentials_for(ENDPOINT)
-    second = manager.credentials_for(ENDPOINT)
+    first = manager.get_credentials(ENDPOINT)
+    second = manager.get_credentials(ENDPOINT)
     assert first is second
     assert len(responses.calls) == 1
 
@@ -80,8 +80,8 @@ def test_manager_refreshes_within_margin() -> None:
     responses.add(responses.GET, ENDPOINT, json=creds_json(soon))
     responses.add(responses.GET, ENDPOINT, json=creds_json(future))
     manager = S3CredentialManager(make_auth())
-    manager.credentials_for(ENDPOINT)
-    manager.credentials_for(ENDPOINT)
+    manager.get_credentials(ENDPOINT)
+    manager.get_credentials(ENDPOINT)
     assert len(responses.calls) == 2
 
 
@@ -91,7 +91,7 @@ def test_manager_is_thread_safe() -> None:
     responses.add(responses.GET, ENDPOINT, json=creds_json(future))
     manager = S3CredentialManager(make_auth())
     threads = [
-        threading.Thread(target=manager.credentials_for, args=(ENDPOINT,))
+        threading.Thread(target=manager.get_credentials, args=(ENDPOINT,))
         for _ in range(8)
     ]
     for t in threads:
@@ -102,18 +102,18 @@ def test_manager_is_thread_safe() -> None:
 
 
 @responses.activate
-def test_credentials_for_bucket_resolves_registry() -> None:
+def test_get_bucket_credentials_resolves_registry() -> None:
     future = (datetime.now(UTC) + timedelta(hours=1)).isoformat()
     responses.add(responses.GET, ENDPOINT, json=creds_json(future))
     manager = S3CredentialManager(make_auth())
-    creds = manager.credentials_for_bucket("s3://podaac-ops-cumulus-protected/x.nc")
+    creds = manager.get_bucket_credentials("s3://podaac-ops-cumulus-protected/x.nc")
     assert creds.access_key_id == "AKID"
 
 
-def test_credentials_for_bucket_unknown_raises() -> None:
+def test_get_bucket_credentials_unknown_raises() -> None:
     manager = S3CredentialManager(make_auth())
     with pytest.raises(S3CredentialsEndpointUnresolved, match="not-a-real-bucket"):
-        manager.credentials_for_bucket("not-a-real-bucket")
+        manager.get_bucket_credentials("not-a-real-bucket")
 
 
 def test_set_default_auth_installs_manager() -> None:

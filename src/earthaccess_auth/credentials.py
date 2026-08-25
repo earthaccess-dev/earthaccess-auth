@@ -86,7 +86,7 @@ class S3CredentialManager:
         self._cache: dict[str, S3Credentials] = {}
         self._lock = threading.Lock()
 
-    def credentials_for(self, endpoint: str) -> S3Credentials:
+    def get_credentials(self, endpoint: str) -> S3Credentials:
         """Return cached credentials for `endpoint`, fetching if stale/absent."""
         with self._lock:
             cached = self._cache.get(endpoint)
@@ -97,7 +97,7 @@ class S3CredentialManager:
             self._cache[endpoint] = creds
             return creds
 
-    def credentials_for_bucket(self, bucket_or_url: str) -> S3Credentials:
+    def get_bucket_credentials(self, bucket_or_url: str) -> S3Credentials:
         """Return credentials for a registered bucket name or `s3://` URL.
 
         Raises:
@@ -110,10 +110,10 @@ class S3CredentialManager:
             msg = (
                 f"bucket {bucket_or_url!r} is not in the CMR-derived bucket "
                 "registry; pass its s3credentials endpoint to "
-                "credentials_for() directly"
+                "get_credentials() directly"
             )
             raise S3CredentialsEndpointUnresolved(msg)
-        return self.credentials_for(info.endpoint)
+        return self.get_credentials(info.endpoint)
 
 
 _default_manager: S3CredentialManager | None = None
