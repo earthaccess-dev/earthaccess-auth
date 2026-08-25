@@ -50,14 +50,18 @@ don't cache them longer than that.
 
 If you're handing credentials to an [`obstore.store.S3Store`][] (see
 [Read a dataset with xarray](read-a-dataset.md)), pass a *provider* instead
-of a one-shot credentials dict. The provider re-calls `get_s3_credentials()`
-on its own once the current credentials near expiry, so a long-running job
-doesn't need its own refresh loop:
+of a one-shot credentials dict. The provider fetches fresh credentials
+on its own once the current ones near expiry — through the process-wide
+credential cache, shared with every other store using the same endpoint —
+so a long-running job doesn't need its own refresh loop:
 
 ```python
 --8<-- "examples/s3_credential_provider.py"
 ```
 
-`credentials_endpoint` is a DAAC's `s3credentials` URL: the
+The endpoint argument is a DAAC's `s3credentials` URL: the
 `"s3-credentials"` field on each entry in
-[`DAACS`](../reference/api.md#earthaccess_auth.daac.DAACS).
+[`DAACS`](../reference/api.md#earthaccess_auth.daac.DAACS). If the bucket
+is in the CMR-derived registry, `EarthdataS3CredentialProvider.for_bucket`
+resolves the endpoint (and region) from a bucket name or `s3://` URL
+instead.

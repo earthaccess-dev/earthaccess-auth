@@ -112,7 +112,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install auth core with adapter extras
-        run: uv sync --locked --no-default-groups --group test --extra fsspec --extra obstore
+        run: uv sync --locked --no-default-groups --group test --extra fsspec --extra obstore --extra icechunk
 
       - name: Test
         run: uv run --no-sync pytest --verbose --color=yes --tb=native --cov=earthaccess_auth --cov-report=term-missing

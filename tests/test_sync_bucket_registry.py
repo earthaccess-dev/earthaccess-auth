@@ -9,6 +9,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from earthaccess_auth.daac import BUCKET_REGISTRY
+
 SCRIPT_PATH = Path(__file__).parents[1] / "scripts" / "sync_bucket_registry.py"
 
 spec = importlib.util.spec_from_file_location("sync_bucket_registry", SCRIPT_PATH)
@@ -20,6 +22,8 @@ spec.loader.exec_module(sync_bucket_registry)
 
 build_bucket_registry = sync_bucket_registry.build_bucket_registry
 split_bucket_and_prefix = sync_bucket_registry.split_bucket_and_prefix
+BucketEndpoint = sync_bucket_registry.BucketEndpoint
+diff_against_vendored = sync_bucket_registry.diff_against_vendored
 
 
 def _collection(
@@ -194,3 +198,24 @@ def test_build_bucket_registry_breaks_conflict_ties_deterministically() -> None:
     reversed_ = build_bucket_registry(tied[::-1])["asf-cumulus-prod-opera-browse"]
 
     assert forward.endpoint == reversed_.endpoint == alaska
+
+
+def test_diff_flags_region_drift() -> None:
+    registry = {
+        bucket: BucketEndpoint(
+            bucket=bucket,
+            endpoint=info.endpoint,
+            region="us-west-2",
+            providers=set(),
+        )
+        for bucket, info in BUCKET_REGISTRY.items()
+    }
+    assert diff_against_vendored(registry) is False
+
+    registry["prod-lads"] = BucketEndpoint(
+        bucket="prod-lads",
+        endpoint=BUCKET_REGISTRY["prod-lads"].endpoint,
+        region="us-east-1",
+        providers=set(),
+    )
+    assert diff_against_vendored(registry) is True

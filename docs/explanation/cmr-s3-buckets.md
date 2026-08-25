@@ -5,6 +5,10 @@
 temporary AWS credentials scoped to it. It's what lets `earthaccess` resolve
 a plain `s3://some-bucket/...` URL to the right DAAC without the caller
 having to pass `provider=` or `credentials_endpoint=` themselves.
+`BUCKET_REGISTRY` vendors the same mapping plus each bucket's AWS region
+(all `us-west-2` as of the 2026-08-18 sweep), and `--check` diffs regions
+too, so a bucket moving regions shows up as drift rather than a runtime
+bug.
 
 ## Where the data comes from
 

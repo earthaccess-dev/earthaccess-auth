@@ -64,14 +64,15 @@ install step required.
 
 !!! note "S3 credentials are DAAC-scoped and short-lived"
 
-    `get_s3_credentials()` / `s3_credential_provider()` return credentials
-    valid for one DAAC's cloud bucket(s), for about an hour. If you're reading
-    granules from more than one DAAC, fetch credentials per DAAC; if a read
-    fails with an auth error partway through a long-running job, get fresh
-    credentials rather than retrying with the ones you have. `s3fs` doesn't
-    refresh automatically either — re-call `get_s3_credentials()` yourself
-    once credentials near expiry. (The `fsspec (HTTPS)` tab uses a bearer
-    token instead of S3 credentials, with its own separate expiry.)
+    `get_s3_credentials()` / `EarthdataS3CredentialProvider` yield
+    credentials valid for one DAAC's cloud bucket(s), for about an hour. If
+    you're reading granules from more than one DAAC, fetch credentials per
+    DAAC; if a read fails with an auth error partway through a long-running
+    job, get fresh credentials rather than retrying with the ones you have.
+    The obstore provider refreshes on its own, but `s3fs` doesn't — re-call
+    `get_s3_credentials()` yourself once credentials near expiry. (The
+    `fsspec (HTTPS)` tab uses a bearer token instead of S3 credentials,
+    with its own separate expiry.)
 
 See [Choosing a backend](../explanation/choosing-a-backend.md) for how to
 decide between these four.

@@ -39,7 +39,7 @@ from typing import Any
 
 import requests
 
-from earthaccess_auth.daac import BUCKET_ENDPOINTS
+from earthaccess_auth.daac import BUCKET_REGISTRY
 
 logger = logging.getLogger(__name__)
 
@@ -221,8 +221,10 @@ def diff_against_vendored(registry: dict[str, BucketEndpoint]) -> bool:
 
     Returns True if there's drift (for use as a CI exit-code gate).
     """
-    vendored = dict(BUCKET_ENDPOINTS)
-    swept = {bucket: be.endpoint for bucket, be in registry.items()}
+    vendored = {
+        bucket: (info.endpoint, info.region) for bucket, info in BUCKET_REGISTRY.items()
+    }
+    swept = {bucket: (be.endpoint, be.region) for bucket, be in registry.items()}
 
     added = sorted(set(swept) - set(vendored))
     removed = sorted(set(vendored) - set(swept))
@@ -233,9 +235,7 @@ def diff_against_vendored(registry: dict[str, BucketEndpoint]) -> bool:
     )
 
     if not (added or removed or changed):
-        logger.info(
-            "No drift: vendored BUCKET_ENDPOINTS matches the current CMR sweep."
-        )
+        logger.info("No drift: vendored BUCKET_REGISTRY matches the current CMR sweep.")
         return False
 
     if added:
@@ -247,7 +247,7 @@ def diff_against_vendored(registry: dict[str, BucketEndpoint]) -> bool:
         for bucket in removed:
             logger.info("  - %s -> %s", bucket, vendored[bucket])
     if changed:
-        logger.info("Buckets with a changed endpoint (%d):", len(changed))
+        logger.info("Buckets with a changed endpoint or region (%d):", len(changed))
         for bucket in changed:
             logger.info("  ~ %s: %s -> %s", bucket, vendored[bucket], swept[bucket])
 
@@ -263,7 +263,10 @@ def main() -> None:
     parser.add_argument(
         "--check",
         action="store_true",
-        help="Diff the sweep against the vendored BUCKET_ENDPOINTS and exit 1 on drift.",
+        help=(
+            "Diff the sweep against the vendored BUCKET_REGISTRY (endpoints "
+            "+ regions) and exit 1 on drift."
+        ),
     )
     parser.add_argument(
         "--page-size",

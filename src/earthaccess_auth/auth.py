@@ -19,7 +19,6 @@ if TYPE_CHECKING:
 import requests
 import requests.cookies
 from tinynetrc import Netrc
-from typing_extensions import deprecated
 
 from earthaccess_auth.daac import DAACS
 from earthaccess_auth.exceptions import (
@@ -187,16 +186,6 @@ class Auth:
             f"https://{self.system.edl_hostname}/users/earthaccess/unaccepted_eulas"
         )
         self._apps_url = f"https://{self.system.edl_hostname}/application_search"
-
-    @deprecated("No replacement, as tokens are now refreshed automatically.")
-    def refresh_tokens(self) -> bool:
-        """Refresh CMR tokens.
-
-        CMR tokens authenticate queries for restricted and early-access
-        datasets. This renews them so queries keep working for whatever
-        collections the authenticated user has access to.
-        """
-        return self.authenticated
 
     def get_s3_credentials(
         self,

@@ -14,7 +14,7 @@ this package is probably all you need.
 ## Install
 
 ```
-pip install earthaccess-auth            # requests + tinynetrc + typing_extensions only
+pip install earthaccess-auth            # requests + tinynetrc only
 pip install earthaccess-auth[fsspec]    # + fsspec/aiohttp HTTPS session
 pip install earthaccess-auth[obstore]   # + obstore credential provider bridge
 ```

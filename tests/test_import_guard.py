@@ -11,7 +11,17 @@ import json
 import subprocess
 import sys
 
-FORBIDDEN = {"fsspec", "aiohttp", "obstore", "s3fs", "cmr", "pqdm", "tenacity"}
+FORBIDDEN = {
+    "fsspec",
+    "aiohttp",
+    "obstore",
+    "s3fs",
+    "cmr",
+    "pqdm",
+    "tenacity",
+    "icechunk",
+    "zarr",
+}
 
 
 def test_core_import_pulls_no_heavy_dependencies() -> None:
