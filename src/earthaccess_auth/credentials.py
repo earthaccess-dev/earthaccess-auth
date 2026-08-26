@@ -144,9 +144,20 @@ _default_manager_lock = threading.Lock()
 
 def set_default_auth(auth: Auth) -> None:
     """Install `auth` as the identity behind [`default_manager`][earthaccess_auth.credentials.default_manager]."""
+    set_default_manager(S3CredentialManager(auth))
+
+
+def set_default_manager(manager: S3CredentialManager) -> None:
+    """Install `manager` as [`default_manager`][earthaccess_auth.credentials.default_manager].
+
+    Unlike [`set_default_auth`][earthaccess_auth.credentials.set_default_auth],
+    this keeps the manager's per-endpoint credential cache: a caller that
+    probed an identity through a manager can install that same manager, so
+    the probe fetch is not thrown away.
+    """
     global _default_manager  # noqa: PLW0603
     with _default_manager_lock:
-        _default_manager = S3CredentialManager(auth)
+        _default_manager = manager
 
 
 def default_manager() -> S3CredentialManager:

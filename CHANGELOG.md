@@ -28,6 +28,10 @@ changelog for history predating the extraction.
 - Added `adapters.icechunk` (extra: `earthaccess-auth[icechunk]`) with
   picklable refreshable S3 credentials for icechunk stores and virtual
   chunk containers.
+- Added `credentials.set_default_manager` to install a pre-built
+  `S3CredentialManager` as the process-wide default, keeping its warm
+  per-endpoint credential cache (e.g. after probing an identity through
+  it); `set_default_auth` is now a wrapper around it.
 
 ### Removed
 
