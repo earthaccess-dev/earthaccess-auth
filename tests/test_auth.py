@@ -175,3 +175,25 @@ def test_get_s3_credentials_raises_when_endpoint_rejects_request() -> None:
 
     with pytest.raises(S3CredentialsRequestFailure, match="EULA"):
         auth.get_s3_credentials(endpoint=endpoint)
+
+
+@responses.activate
+@pytest.mark.parametrize("status", [401, 403])
+def test_request_failure_carries_status_code(status: int) -> None:
+    """Consumers need to distinguish invalid credentials (401 — a service
+    problem) from an unaccepted EULA (403 — a user problem); the exception
+    carries the endpoint's HTTP status for that.
+    """
+    endpoint = "https://data.nsidc.earthdatacloud.nasa.gov/s3credentials"
+    responses.add(responses.GET, endpoint, json={"error": "no"}, status=status)
+
+    auth = Auth()
+    auth.authenticated = True
+
+    with pytest.raises(S3CredentialsRequestFailure) as excinfo:
+        auth.get_s3_credentials(endpoint=endpoint)
+    assert excinfo.value.status_code == status
+
+
+def test_request_failure_status_code_defaults_to_none() -> None:
+    assert S3CredentialsRequestFailure("message only").status_code is None

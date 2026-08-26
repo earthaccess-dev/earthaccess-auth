@@ -247,7 +247,7 @@ class Auth:
                 f"Consider accepting the EULAs available at {self._eula_url} "
                 f"and applications at {self._apps_url}."
             )
-            raise S3CredentialsRequestFailure(msg)
+            raise S3CredentialsRequestFailure(msg, status_code=r.status_code)
 
     def get_session(self) -> requests.Session:
         """Build a new `requests.Session` with EDL authentication configured.

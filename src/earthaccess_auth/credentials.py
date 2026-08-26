@@ -85,16 +85,38 @@ class S3CredentialManager:
         self._refresh_margin = refresh_margin
         self._cache: dict[str, S3Credentials] = {}
         self._lock = threading.Lock()
+        self._endpoint_locks: dict[str, threading.Lock] = {}
+
+    def _fresh(self, endpoint: str) -> S3Credentials | None:
+        """Return the cached credentials if still outside the refresh margin."""
+        cached = self._cache.get(endpoint)
+        now = datetime.now(UTC)
+        if cached is not None and cached.expires_at - self._refresh_margin > now:
+            return cached
+        return None
 
     def get_credentials(self, endpoint: str) -> S3Credentials:
-        """Return cached credentials for `endpoint`, fetching if stale/absent."""
+        """Return cached credentials for `endpoint`, fetching if stale/absent.
+
+        The fetch is guarded by a per-endpoint lock, so concurrent callers
+        of the same endpoint still trigger a single fetch, while a slow
+        fetch for one endpoint never blocks callers of another endpoint
+        whose cached credentials are still valid.
+        """
         with self._lock:
-            cached = self._cache.get(endpoint)
-            now = datetime.now(UTC)
-            if cached is not None and cached.expires_at - self._refresh_margin > now:
-                return cached
+            fresh = self._fresh(endpoint)
+            if fresh is not None:
+                return fresh
+            endpoint_lock = self._endpoint_locks.setdefault(endpoint, threading.Lock())
+        with endpoint_lock:
+            with self._lock:
+                # another caller may have refreshed while we waited
+                fresh = self._fresh(endpoint)
+                if fresh is not None:
+                    return fresh
             creds = fetch_s3_credentials(self._auth, endpoint)
-            self._cache[endpoint] = creds
+            with self._lock:
+                self._cache[endpoint] = creds
             return creds
 
     def get_bucket_credentials(self, bucket_or_url: str) -> S3Credentials:

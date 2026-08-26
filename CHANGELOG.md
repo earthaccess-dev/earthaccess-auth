@@ -12,6 +12,10 @@ changelog for history predating the extraction.
 
 ### Added
 
+- `exceptions.S3CredentialsRequestFailure` carries the endpoint's HTTP
+  status as `status_code` (`None` when the failure wasn't an HTTP
+  rejection), so consumers can distinguish rejected service credentials
+  (401) from an unaccepted EULA (403).
 - Added `earthaccess_auth.credentials`: `fetch_s3_credentials`,
   `S3Credentials`, thread-safe per-endpoint `S3CredentialManager`, and a
   process-wide `default_manager()` (non-interactive login only).
@@ -32,6 +36,13 @@ changelog for history predating the extraction.
   import and shares the process-wide credential cache.
 - **Breaking:** removed `Auth.refresh_tokens()`; it has no replacement, as
   tokens are refreshed automatically.
+
+### Fixed
+
+- `S3CredentialManager.get_credentials` no longer holds the manager-wide
+  lock across the HTTP round trip: fetches are guarded by per-endpoint
+  locks, so a slow or hung fetch for one endpoint no longer stalls
+  callers of other endpoints whose cached credentials are still valid.
 
 ## [0.1.0] - 2026-08-19
 

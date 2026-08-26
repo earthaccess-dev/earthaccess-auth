@@ -102,6 +102,46 @@ def test_manager_is_thread_safe() -> None:
 
 
 @responses.activate
+def test_manager_fetch_does_not_block_other_endpoints() -> None:
+    """A slow (or hung) fetch for one endpoint must not stall consumers of
+    other endpoints whose cached credentials are still valid — the lock is
+    per endpoint, held only around the fetch, not manager-wide.
+    """
+    future = (datetime.now(UTC) + timedelta(hours=1)).isoformat()
+    slow_endpoint = "https://data.slow.earthdatacloud.nasa.gov/s3credentials"
+    fetch_entered = threading.Event()
+    release_fetch = threading.Event()
+
+    def hanging(request):  # noqa: ANN001, ANN202
+        fetch_entered.set()
+        assert release_fetch.wait(timeout=10)
+        body = (
+            '{"accessKeyId": "A", "secretAccessKey": "S", '
+            f'"sessionToken": "T", "expiration": "{future}"}}'
+        )
+        return (200, {}, body)
+
+    responses.add(responses.GET, ENDPOINT, json=creds_json(future))
+    responses.add_callback(responses.GET, slow_endpoint, callback=hanging)
+
+    manager = S3CredentialManager(make_auth())
+    manager.get_credentials(ENDPOINT)  # warm the fast endpoint's cache
+
+    slow = threading.Thread(target=manager.get_credentials, args=(slow_endpoint,))
+    slow.start()
+    try:
+        assert fetch_entered.wait(timeout=10)
+        # while the slow fetch holds its endpoint lock, the cached endpoint
+        # must still be served
+        creds = manager.get_credentials(ENDPOINT)
+        assert creds.access_key_id == "AKID"
+    finally:
+        release_fetch.set()
+        slow.join(timeout=10)
+    assert not slow.is_alive()
+
+
+@responses.activate
 def test_get_bucket_credentials_resolves_registry() -> None:
     future = (datetime.now(UTC) + timedelta(hours=1)).isoformat()
     responses.add(responses.GET, ENDPOINT, json=creds_json(future))
