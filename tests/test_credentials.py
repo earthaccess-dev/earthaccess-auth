@@ -3,6 +3,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import pytest
+import requests
 import responses
 
 import earthaccess_auth.credentials as credentials_module
@@ -112,7 +113,7 @@ def test_manager_fetch_does_not_block_other_endpoints() -> None:
     fetch_entered = threading.Event()
     release_fetch = threading.Event()
 
-    def hanging(request):  # noqa: ANN001, ANN202
+    def hanging(request: requests.PreparedRequest) -> tuple[int, dict[str, str], str]:
         fetch_entered.set()
         assert release_fetch.wait(timeout=10)
         body = (
