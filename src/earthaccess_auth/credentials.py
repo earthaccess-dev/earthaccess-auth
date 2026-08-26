@@ -143,10 +143,29 @@ _default_manager_lock = threading.Lock()
 
 
 def set_default_auth(auth: Auth) -> None:
-    """Install `auth` as the identity behind [`default_manager`][earthaccess_auth.credentials.default_manager]."""
+    """Make `auth` the identity behind [`default_manager`][earthaccess_auth.credentials.default_manager].
+
+    Builds a fresh [`S3CredentialManager`][earthaccess_auth.S3CredentialManager]
+    for `auth`. If you already have a manager with credentials in its cache,
+    pass it to
+    [`set_default_manager`][earthaccess_auth.credentials.set_default_manager]
+    instead so the cache survives.
+    """
+    set_default_manager(S3CredentialManager(auth))
+
+
+def set_default_manager(manager: S3CredentialManager) -> None:
+    """Make `manager` the process-wide [`default_manager`][earthaccess_auth.credentials.default_manager].
+
+    Most callers want
+    [`set_default_auth`][earthaccess_auth.credentials.set_default_auth]. Use
+    this one when you already have a manager, usually because you validated
+    its identity by fetching credentials through it first: consumers then
+    start from that warm cache instead of repeating the fetch.
+    """
     global _default_manager  # noqa: PLW0603
     with _default_manager_lock:
-        _default_manager = S3CredentialManager(auth)
+        _default_manager = manager
 
 
 def default_manager() -> S3CredentialManager:
