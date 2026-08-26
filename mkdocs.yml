@@ -50,6 +50,7 @@ plugins:
 markdown_extensions:
   - admonition
   - attr_list
+  - def_list
   - toc:
       toc_depth: 2
   - pymdownx.highlight:
@@ -74,6 +75,7 @@ nav:
       - "How the bucket registry is built": explanation/cmr-s3-buckets.md
   - Reference:
       - "API": reference/api.md
+      - "Glossary": reference/glossary.md
 
 watch:
   - docs
