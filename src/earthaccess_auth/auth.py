@@ -239,7 +239,19 @@ class Auth:
 
         with self.get_session() as session, session.get(auth_url, timeout=15) as r:
             if r:
-                return cast("dict[str, str]", r.json())
+                try:
+                    return cast("dict[str, str]", r.json())
+                except ValueError as e:
+                    # e.g. an EDL login page served with a 200 when the
+                    # OAuth redirect chain didn't complete
+                    msg = (
+                        f"The s3credentials endpoint {auth_url} returned "
+                        f"status {r.status_code} with a non-JSON body:\n"
+                        f"{r.text[:500]}"
+                    )
+                    raise S3CredentialsRequestFailure(
+                        msg, status_code=r.status_code
+                    ) from e
 
             msg = (
                 f"The s3credentials endpoint {auth_url} rejected the request "
@@ -351,7 +363,16 @@ class Auth:
 
             logger.info("You're now authenticated with NASA Earthdata Login")
 
-            token = token_resp.json()
+            try:
+                token = token_resp.json()
+            except ValueError as e:
+                msg = (
+                    f"Earthdata Login token request returned status "
+                    f"{token_resp.status_code} with a non-JSON body:\n"
+                    f"{token_resp.text[:500]}"
+                )
+                logger.exception(msg)
+                raise LoginAttemptFailure(msg) from e
             logger.info("Using token with expiration date %s", token["expiration_date"])
             self.token = token
             self.authenticated = True
