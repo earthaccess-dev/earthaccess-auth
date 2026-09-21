@@ -55,6 +55,13 @@
     ],
     "region": "us-west-2"
   },
+  "asf-cumulus-prod-products": {
+    "endpoint": "https://cumulus.asf.earthdatacloud.nasa.gov/s3credentials",
+    "providers": [
+      "ASF"
+    ],
+    "region": "us-west-2"
+  },
   "asf-cumulus-prod-seasat-products": {
     "endpoint": "https://cumulus.asf.earthdatacloud.nasa.gov/s3credentials",
     "providers": [
