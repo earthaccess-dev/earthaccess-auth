@@ -1,5 +1,6 @@
 import pickle
 from datetime import UTC, datetime
+from pathlib import Path
 
 import pytest
 
@@ -83,3 +84,52 @@ def test_refreshable_credentials_wrapper(stub_manager: StubManager) -> None:
 
     refreshable = earthdata_s3_credentials(ENDPOINT)
     assert isinstance(refreshable, icechunk.S3Credentials.Refreshable)
+
+
+def _repository_storage(tmp_path: Path, *prefixes: str) -> "icechunk.Storage":
+    storage = icechunk.local_filesystem_storage(str(tmp_path))
+    config = icechunk.RepositoryConfig.default()
+    for prefix in prefixes:
+        config.set_virtual_chunk_container(
+            icechunk.VirtualChunkContainer(
+                prefix, icechunk.s3_store(region="us-west-2")
+            )
+        )
+    icechunk.Repository.create(
+        storage,
+        config=config,
+        authorize_virtual_chunk_access=icechunk.containers_credentials(
+            dict.fromkeys(prefixes, icechunk.s3_anonymous_credentials())
+        ),
+    )
+    return storage
+
+
+def test_containers_credentials_cover_registered_containers(
+    tmp_path: Path, stub_manager: StubManager
+) -> None:
+    from earthaccess_auth.adapters.icechunk import (  # noqa: PLC0415
+        earthdata_containers_credentials,
+    )
+
+    storage = _repository_storage(
+        tmp_path, "s3://podaac-ops-cumulus-protected/", "s3://not-registered/"
+    )
+    authorized = earthdata_containers_credentials(storage)
+
+    assert list(authorized) == ["s3://podaac-ops-cumulus-protected/"]
+    assert isinstance(
+        authorized["s3://podaac-ops-cumulus-protected/"], icechunk.Credentials.S3
+    )
+    # Nothing fetched until icechunk asks for the credentials.
+    assert stub_manager.requested == []
+    # And the repository accepts the mapping as-is.
+    icechunk.Repository.open(storage, authorize_virtual_chunk_access=authorized)
+
+
+def test_containers_credentials_without_containers(tmp_path: Path) -> None:
+    from earthaccess_auth.adapters.icechunk import (  # noqa: PLC0415
+        earthdata_containers_credentials,
+    )
+
+    assert earthdata_containers_credentials(_repository_storage(tmp_path)) == {}

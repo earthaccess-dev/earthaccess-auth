@@ -76,6 +76,8 @@ def earthdata_s3_credentials(
     `icechunk.Repository.open(authorize_virtual_chunk_access=...)`, wrap it
     with `icechunk.containers_credentials({prefix: <this>})`, which icechunk
     requires for the values of that mapping.
+    [`earthdata_containers_credentials`][earthaccess_auth.adapters.icechunk.earthdata_containers_credentials]
+    does that for every container the repository declares.
 
     Parameters:
         bucket_or_endpoint: A registered bucket name, an `s3://` URL of
@@ -88,4 +90,41 @@ def earthdata_s3_credentials(
     """
     return icechunk.s3_refreshable_credentials(
         get_credentials_callable(bucket_or_endpoint)
+    )
+
+
+def earthdata_containers_credentials(
+    storage: icechunk.Storage,
+) -> dict[str, icechunk.AnyCredential | None]:
+    """Authorize every Earthdata bucket a repository declares as a virtual chunk container.
+
+    Reads the repository's saved configuration from `storage` and pairs each
+    virtual chunk container whose URL prefix is a bucket in the CMR-derived
+    [`BUCKET_REGISTRY`][earthaccess_auth.daac.BUCKET_REGISTRY] with
+    [`earthdata_s3_credentials`][earthaccess_auth.adapters.icechunk.earthdata_s3_credentials].
+    Readers then need to know nothing about where the chunks live:
+
+    ```python
+    repo = icechunk.Repository.open(
+        storage,
+        authorize_virtual_chunk_access=earthdata_containers_credentials(storage),
+    )
+    ```
+
+    Containers for unregistered buckets are left out. Add your own
+    credentials for those to the returned dict. A repository without a
+    saved configuration, or without containers, yields an empty dict.
+
+    Parameters:
+        storage: The repository's `icechunk.Storage`, as passed to
+            `icechunk.Repository.open`.
+    """
+    config = icechunk.Repository.fetch_config(storage)
+    containers = (config.virtual_chunk_containers if config else None) or {}
+    return icechunk.containers_credentials(
+        {
+            container.url_prefix: earthdata_s3_credentials(container.url_prefix)
+            for container in containers.values()
+            if resolve_bucket(container.url_prefix) is not None
+        }
     )

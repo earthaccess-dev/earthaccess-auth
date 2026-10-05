@@ -12,6 +12,11 @@ changelog for history predating the extraction.
 
 ### Added
 
+- Added `adapters.icechunk.earthdata_containers_credentials(storage)`,
+  which reads a repository's virtual chunk containers and returns the
+  `authorize_virtual_chunk_access` mapping for every registered Earthdata
+  bucket among them, so readers need not know which bucket holds the chunks.
+
 - `exceptions.S3CredentialsRequestFailure` carries the endpoint's HTTP
   status as `status_code` (`None` when the failure wasn't an HTTP
   rejection), so consumers can distinguish rejected service credentials
