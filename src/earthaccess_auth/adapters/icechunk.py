@@ -72,9 +72,10 @@ def earthdata_s3_credentials(
 ) -> icechunk.S3Credentials.Refreshable:
     """Build a refreshable icechunk credential, e.g. for virtual chunk containers.
 
-    Hand the result to `icechunk.Repository.open(
-    authorize_virtual_chunk_access={prefix: <this>})` or anywhere an
-    `icechunk.AnyS3Credential` is accepted.
+    Usable anywhere an `icechunk.AnyS3Credential` is accepted. For
+    `icechunk.Repository.open(authorize_virtual_chunk_access=...)`, wrap it
+    with `icechunk.containers_credentials({prefix: <this>})`, which icechunk
+    requires for the values of that mapping.
 
     Parameters:
         bucket_or_endpoint: A registered bucket name, an `s3://` URL of
