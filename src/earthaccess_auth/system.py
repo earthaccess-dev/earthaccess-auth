@@ -25,7 +25,10 @@ PROD = System(
     StatusApiURL("https://status.earthdata.nasa.gov/api/v1/statuses"),
     EDLHostname("urs.earthdata.nasa.gov"),
 )
-"""NASA's production Earthdata system. The default for `login(system=...)`."""
+"""NASA's production Earthdata system.
+
+The default for [`login(system=...)`][earthaccess_auth.login].
+"""
 
 UAT = System(
     CMRBaseURL("https://cmr.uat.earthdata.nasa.gov/search/"),

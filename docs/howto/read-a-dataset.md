@@ -9,8 +9,9 @@ NASA Earthdata serves each granule from one of two places:
 After you log in, `earthaccess-auth` gives you a credential provider or a
 headers dict for each of these. You can open the file with
 [obspec-utils](https://github.com/developmentseed/obspec-utils)'s
-`EagerStoreReader`, or with `fsspec` or `s3fs`. The call to
-`xarray.open_dataset` is the same for all of them.
+[`EagerStoreReader`][obspec_utils.readers.EagerStoreReader], or with
+`fsspec` or `s3fs`. The call to
+[`xarray.open_dataset`][xarray.open_dataset] is the same for all of them.
 
 === "obstore (S3)"
 
@@ -24,8 +25,10 @@ headers dict for each of these. You can open the file with
 === "s3fs (S3)"
 
     If you already use `s3fs` or `fsspec`, you need only the core of
-    `earthaccess-auth`, with no extras. `get_s3_credentials()` returns a
-    dict of temporary AWS credentials. `s3fs.S3FileSystem` accepts this dict
+    `earthaccess-auth`, with no extras.
+    [`get_s3_credentials()`][earthaccess_auth.Auth.get_s3_credentials]
+    returns a dict of temporary AWS credentials.
+    [`s3fs.S3FileSystem`][s3fs.core.S3FileSystem] accepts this dict
     directly, so you don't need an adapter.
 
     ```python
@@ -34,8 +37,9 @@ headers dict for each of these. You can open the file with
 
 === "obspec-utils (HTTPS)"
 
-    Requires the `obstore` extra (for `http_client_options`), `obspec-utils`,
-    and `aiohttp`:
+    Requires the `obstore` extra (for
+    [`http_client_options`][earthaccess_auth.adapters.obstore.http_client_options]),
+    `obspec-utils`, and `aiohttp`:
     `pip install earthaccess-auth[obstore] obspec-utils aiohttp`.
 
     Use this for granules that are only on-prem, with no S3 bucket. Also
@@ -68,8 +72,9 @@ need a separate install step.
 
 !!! note "S3 credentials are for one DAAC and expire after about an hour"
 
-    `get_s3_credentials()` and `EarthdataS3CredentialProvider` give
-    credentials for the cloud buckets of one DAAC. The credentials are valid
+    [`get_s3_credentials()`][earthaccess_auth.Auth.get_s3_credentials] and
+    [`EarthdataS3CredentialProvider`][earthaccess_auth.adapters.obstore.EarthdataS3CredentialProvider]
+    give credentials for the cloud buckets of one DAAC. The credentials are valid
     for about one hour.
 
     - If you read granules from more than one DAAC, get credentials for

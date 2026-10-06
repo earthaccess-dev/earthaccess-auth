@@ -11,8 +11,11 @@ credentials work.
     ```
 
     [`obstore.list()`][obstore.list] returns a stream of pages. Each
-    iteration gives one page: a list of `ObjectMeta` dicts (`path`, `size`,
-    `last_modified`, `e_tag`), with 50 items by default. A nested loop reads
+    iteration gives one page: a list of
+    [`ObjectMeta`][obstore.ObjectMeta] dicts
+    ([`path`][obstore.ObjectMeta.path], [`size`][obstore.ObjectMeta.size],
+    [`last_modified`][obstore.ObjectMeta.last_modified],
+    [`e_tag`][obstore.ObjectMeta.e_tag]), with 50 items by default. A nested loop reads
     the items in each page. obstore fetches each page only when the loop
     needs it, so it doesn't load the full prefix into memory.
 
@@ -21,8 +24,8 @@ credentials work.
     If you already use `s3fs` or `fsspec`, you need only the core of
     `earthaccess-auth`, with no extras.
     [`Auth.get_s3_credentials`][earthaccess_auth.Auth.get_s3_credentials]
-    returns a dict of temporary AWS credentials. `s3fs.S3FileSystem` and
-    other `boto3`-style clients accept this dict directly, so you don't need
+    returns a dict of temporary AWS credentials.
+    [`s3fs.S3FileSystem`][s3fs.core.S3FileSystem] and other `boto3`-style clients accept this dict directly, so you don't need
     an adapter. See
     [Get S3 credentials and bearer tokens](s3-credentials-and-bearer-token.md).
 
@@ -30,7 +33,8 @@ credentials work.
     --8<-- "examples/list_bucket_contents_s3fs.py"
     ```
 
-    `S3FileSystem.ls()` returns one flat list, not a stream of pages. This
+    [`S3FileSystem.ls()`][fsspec.spec.AbstractFileSystem.ls] returns one
+    flat list, not a stream of pages. This
     is easier for a small listing. But it loads the full prefix into memory.
 
 Both scripts are in

@@ -38,12 +38,15 @@ class _CredentialSource(Protocol):
 class EarthdataS3CredentialProvider:
     """obstore-compatible S3 credential provider backed by earthaccess-auth.
 
-    Implements obstore's `S3CredentialProvider` protocol without importing
+    Implements obstore's
+    [`S3CredentialProvider`][obstore.store.S3CredentialProvider] protocol
+    without importing
     obstore's types. Calling the provider returns the credential dict, and
     its `config` attribute carries the region. It works with any obstore
     version that accepts custom credential providers.
 
-    obstore calls the provider again once `expires_at` passes. Stores that
+    obstore calls the provider again once
+    [`expires_at`][obstore.store.S3Credential.expires_at] passes. Stores that
     share an endpoint share one cached fetch through the credential
     manager.
     """
@@ -95,7 +98,7 @@ class EarthdataS3CredentialProvider:
         return cls(info.endpoint, region=info.region, manager=manager)
 
     def __call__(self) -> dict[str, Any]:
-        """Fetch credentials in obstore's `S3Credential` dict shape."""
+        """Fetch credentials in obstore's [`S3Credential`][obstore.store.S3Credential] dict shape."""
         manager = self._manager if self._manager is not None else default_manager()
         creds = manager.get_credentials(self._endpoint)
         return {
@@ -110,15 +113,18 @@ def http_client_options(auth: Auth) -> dict[str, Any]:
     """Build default-header client options for HTTPS stores fronting EDL-protected data.
 
     Usable for obstore HTTP stores and any store config that accepts plain
-    headers, such as icechunk's `http_store(headers=...)` for virtual chunk
+    headers, such as icechunk's
+    [`http_store(headers=...)`][icechunk.http_store] for virtual chunk
     containers.
 
     Parameters:
-        auth: An authenticated `Auth` instance.
+        auth: An authenticated [`Auth`][earthaccess_auth.Auth] instance.
 
     Returns:
-        A dict with a `default_headers` key carrying the bearer token,
-        matching [`obstore.store.ClientConfig`][]'s shape.
+        A dict with a
+        [`default_headers`][obstore.store.ClientConfig.default_headers] key
+        carrying the bearer token, matching
+        [`obstore.store.ClientConfig`][]'s shape.
 
     Raises:
         ValueError: If `auth` has not been authenticated (`auth.token is None`).

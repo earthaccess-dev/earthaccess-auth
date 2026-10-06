@@ -26,11 +26,12 @@ function.
 
 ## Header dict for HTTP-based stores
 
-Use `http_client_options` for any tool that accepts a plain `headers`
-dict. Examples:
+Use
+[`http_client_options`][earthaccess_auth.adapters.obstore.http_client_options]
+for any tool that accepts a plain `headers` dict. Examples:
 
 - obstore HTTP stores
-- obspec-utils's `AiohttpStore` (see
+- obspec-utils's [`AiohttpStore`][obspec_utils.stores.AiohttpStore] (see
   [Read a dataset with xarray](read-a-dataset.md))
 - icechunk's [`http_store(headers=...)`][icechunk.http_store] for virtual
   chunk containers
@@ -53,7 +54,7 @@ You can find credentials in three ways:
 
 - by DAAC short name (`daac="NSIDC"`)
 - by cloud provider code (`provider="NSIDC_CPRD"`), which
-  [`find_provider`](../reference/api.md#earthaccess_auth.daac.find_provider)
+  [`find_provider`][earthaccess_auth.daac.find_provider]
   returns
 - by `s3credentials` endpoint URL (`endpoint=...`), if you already have
   one
@@ -76,7 +77,9 @@ own refresh loop.
 ```
 
 The endpoint argument is the `s3credentials` URL of a DAAC. Each entry in
-[`DAACS`](../reference/api.md#earthaccess_auth.daac.DAACS) has this URL in
+[`DAACS`][earthaccess_auth.daac.DAACS] has this URL in
 its `"s3-credentials"` field. If the bucket is in the CMR-derived registry,
-use `EarthdataS3CredentialProvider.for_bucket` instead. It finds the
+use
+[`EarthdataS3CredentialProvider.for_bucket`][earthaccess_auth.adapters.obstore.EarthdataS3CredentialProvider.for_bucket]
+instead. It finds the
 endpoint and region from a bucket name or an `s3://` URL.

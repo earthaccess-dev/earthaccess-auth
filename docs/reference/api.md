@@ -107,8 +107,9 @@ credentials that manager has in its cache.
 
 A system is the Earthdata deployment that you log in to. Pass it as the
 `system` parameter of [`login`][earthaccess_auth.login]. The default is
-`PROD`. To test with NASA's pre-release environment before a change goes to
-production, pass `UAT`.
+[`PROD`][earthaccess_auth.PROD]. To test with NASA's pre-release
+environment before a change goes to production, pass
+[`UAT`][earthaccess_auth.UAT].
 
 ::: earthaccess_auth.System
     options:

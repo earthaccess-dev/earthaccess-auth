@@ -39,11 +39,12 @@ def fetch_s3_credentials(auth: Auth, endpoint: str) -> S3Credentials:
     for repeated access.
 
     Parameters:
-        auth: An authenticated `Auth` instance.
+        auth: An authenticated [`Auth`][earthaccess_auth.Auth] instance.
         endpoint: A DAAC's `s3credentials` URL.
 
     Returns:
-        The parsed credentials, with `expires_at` timezone-aware (a naive
+        The parsed credentials, with
+        [`expires_at`][earthaccess_auth.S3Credentials.expires_at] timezone-aware (a naive
         timestamp from the endpoint is interpreted as UTC).
 
     Raises:
@@ -73,7 +74,7 @@ class S3CredentialManager:
         """Initialize the manager.
 
         Parameters:
-            auth: An authenticated `Auth` instance.
+            auth: An authenticated [`Auth`][earthaccess_auth.Auth] instance.
             refresh_margin: Re-fetch credentials once they are within this
                 margin of expiry, so consumers never receive credentials
                 about to lapse mid-request.
@@ -171,7 +172,7 @@ def default_manager() -> S3CredentialManager:
     First use logs in with the non-interactive strategies, in order:
     `environment` (`EARTHDATA_TOKEN`, or `EARTHDATA_USERNAME` +
     `EARTHDATA_PASSWORD`), then `netrc`. It never tries `interactive`,
-    because this runs inside services, where an `input()` prompt would
+    because this runs inside services, where an [`input()`][input] prompt would
     block.
 
     Adapter functions reference this module-level manager, so they can be
@@ -181,7 +182,7 @@ def default_manager() -> S3CredentialManager:
         LoginStrategyUnavailable: If neither non-interactive strategy is
             available. Call
             [`set_default_auth`][earthaccess_auth.credentials.set_default_auth]
-            to supply a custom `Auth` instead.
+            to supply a custom [`Auth`][earthaccess_auth.Auth] instead.
     """
     global _default_manager  # noqa: PLW0603
     with _default_manager_lock:

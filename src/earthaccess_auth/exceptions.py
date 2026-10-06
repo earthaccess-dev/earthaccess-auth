@@ -6,7 +6,8 @@ class LoginStrategyUnavailable(Exception):  # noqa: N818
 
     For example, the `"environment"` strategy raises this if none of
     `EARTHDATA_USERNAME`/`EARTHDATA_PASSWORD`/`EARTHDATA_TOKEN` are set.
-    Contrast with `LoginAttemptFailure`, which is raised when a strategy
+    Contrast with
+    [`LoginAttemptFailure`][earthaccess_auth.LoginAttemptFailure], which is raised when a strategy
     was attempted but Earthdata Login rejected the credentials.
     """
 
@@ -15,7 +16,9 @@ class LoginAttemptFailure(Exception):  # noqa: N818
     """Raised when Earthdata Login rejects an authentication attempt.
 
     For example, because the supplied username/password or token were
-    invalid. Contrast with `LoginStrategyUnavailable`, which is raised when
+    invalid. Contrast with
+    [`LoginStrategyUnavailable`][earthaccess_auth.LoginStrategyUnavailable],
+    which is raised when
     a strategy couldn't even be attempted (e.g. missing credentials).
     """
 
@@ -26,10 +29,13 @@ class S3CredentialsEndpointUnresolved(Exception):  # noqa: N818
     This happens when the given `daac`/`provider` isn't in the DAAC
     registry, or the DAAC has no cloud collections and therefore no
     `s3credentials` URL. It is also raised when a bucket name or `s3://`
-    URL isn't in the CMR-derived `BUCKET_REGISTRY`, by
-    `credentials.S3CredentialManager.get_bucket_credentials`,
-    `adapters.obstore.EarthdataS3CredentialProvider.for_bucket`, and
-    `adapters.icechunk`.
+    URL isn't in the CMR-derived
+    [`BUCKET_REGISTRY`][earthaccess_auth.daac.BUCKET_REGISTRY], by
+    [`S3CredentialManager.get_bucket_credentials`][earthaccess_auth.S3CredentialManager.get_bucket_credentials],
+    [`EarthdataS3CredentialProvider.for_bucket`][earthaccess_auth.adapters.obstore.EarthdataS3CredentialProvider.for_bucket],
+    [`get_credentials_callable`][earthaccess_auth.adapters.icechunk.get_credentials_callable],
+    and
+    [`earthdata_s3_credentials`][earthaccess_auth.adapters.icechunk.earthdata_s3_credentials].
     """
 
 

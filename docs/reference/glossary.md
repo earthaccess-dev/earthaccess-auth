@@ -68,7 +68,7 @@ library use. They are grouped by concept.
 : The one credential manager that the whole process shares.
   [`default_manager`][earthaccess_auth.default_manager] returns it. It is
   created on first use, with the non-interactive login strategies. The
-  adapter functions call `default_manager` each time they need credentials.
+  adapter functions call it each time they need credentials.
   They don't keep a reference to a manager. So they can be pickled, and a
   new default applies to all consumers immediately.
 

@@ -35,7 +35,8 @@ if not auth.authenticated:
 token = auth.token["access_token"]
 ```
 
-`login()` returns a new `Auth` instance each time. You can keep more than
+[`login()`][earthaccess_auth.login] returns a new
+[`Auth`][earthaccess_auth.Auth] instance each time. You can keep more than
 one authenticated instance and pass each one where you need it.
 
 ## Where to go next

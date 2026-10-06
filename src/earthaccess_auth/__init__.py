@@ -77,10 +77,11 @@ def login(
                 variables, or an Earthdata login token from the
                 `EARTHDATA_TOKEN` environment variable.
         persist: Persist username and password credentials in a `.netrc` file.
-        system: The EDL endpoint to authenticate against. Defaults to `PROD`.
+        system: The EDL endpoint to authenticate against. Defaults to
+            [`PROD`][earthaccess_auth.PROD].
 
     Returns:
-        An authenticated `Auth` instance to pass to any functions that
+        An authenticated [`Auth`][earthaccess_auth.Auth] instance to pass to any functions that
         need authentication.
     """
     auth = Auth()
