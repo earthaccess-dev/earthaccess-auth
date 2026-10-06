@@ -1,15 +1,16 @@
 # earthaccess-auth
 
 A minimal-dependency distribution containing only the NASA Earthdata Login
-(EDL) authentication core of [earthaccess](https://github.com/earthaccess-dev/earthaccess):
-login strategies, token lifecycle, per-DAAC S3 credential exchange, and the
-redirect-safe requests session. Integrations with [fsspec](https://filesystem-spec.readthedocs.io/)
-and [obstore](https://developmentseed.org/obstore/) are optional extras, so
-auth-only consumers don't install the rest of earthaccess's search/download
-stack.
+(EDL) authentication core of [earthaccess](https://github.com/earthaccess-dev/earthaccess),
+such as login strategies, token lifecycle, per-DAAC S3 credential exchange, and the
+redirect-safe requests session.
 
-If you only need a bearer token or temporary S3 credentials, not CMR search,
-this package is probably all you need.
+`earthacess-auth` provides integrations with [fsspec](https://filesystem-spec.readthedocs.io/),
+[obstore](https://developmentseed.org/obstore/), and [icechunk](https://icechunk.io/) using
+ optional extras.
+
+This library is meant for people and applications using data in NASA cloud buckets
+but not CMR search.
 
 ## Install
 

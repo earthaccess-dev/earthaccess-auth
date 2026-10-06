@@ -145,7 +145,7 @@ class Auth:
             system: The EDL endpoint to authenticate against. Defaults to `PROD`.
 
         Returns:
-            This `Auth` instance, now authenticated.
+            The authenticated `Auth` instance.
 
         Raises:
             LoginAttemptFailure: If the NASA Earthdata Login service rejects

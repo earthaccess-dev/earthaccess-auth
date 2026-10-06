@@ -35,11 +35,10 @@ class S3Credentials:
 
 
 def fetch_s3_credentials(auth: Auth, endpoint: str) -> S3Credentials:
-    """Fetch and parse temporary S3 credentials from an `s3credentials` endpoint.
+    """Fetch and parse temporary S3 credentials from an `s3credentials` endpoint.].
 
-    A one-shot, uncached fetch — the primitive external credential
-    providers (e.g. obstore's) can delegate to. For repeated access, use
-    [`S3CredentialManager`][earthaccess_auth.credentials.S3CredentialManager].
+    Use [`S3CredentialManager`][earthaccess_auth.credentials.S3CredentialManager]
+    for repeated access.
 
     Parameters:
         auth: An authenticated `Auth` instance.

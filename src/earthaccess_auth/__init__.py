@@ -80,8 +80,8 @@ def login(
         system: The EDL endpoint to authenticate against. Defaults to `PROD`.
 
     Returns:
-        An authenticated `Auth` instance. Hold onto it yourself — there's no
-        module-level singleton, so pass it to whatever needs it.
+        An authenticated `Auth` instance to pass to any functions that
+        need authentication.
     """
     auth = Auth()
 
