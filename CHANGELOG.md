@@ -10,6 +10,8 @@ changelog for history predating the extraction.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-06
+
 ### Added
 
 - Added `adapters.icechunk.earthdata_containers_credentials(repo)`,
@@ -101,7 +103,8 @@ Behavior differences from the implementation extracted out of `earthaccess`:
   request instead of potentially hanging forever.
 - Python 3.12 or newer is required.
 
-[Unreleased]: https://github.com/earthaccess-dev/earthaccess-auth/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/earthaccess-dev/earthaccess-auth/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/earthaccess-dev/earthaccess-auth/releases/tag/v0.4.0
 [0.3.1]: https://github.com/earthaccess-dev/earthaccess-auth/releases/tag/v0.3.1
 [0.3.0]: https://github.com/earthaccess-dev/earthaccess-auth/releases/tag/v0.3.0
 [0.2.0]: https://github.com/earthaccess-dev/earthaccess-auth/releases/tag/v0.2.0
