@@ -70,25 +70,36 @@ def get_credentials_callable(
 def earthdata_s3_credentials(
     bucket_or_endpoint: str,
 ) -> icechunk.S3Credentials.Refreshable:
-    """Build a refreshable icechunk credential, e.g. for virtual chunk containers.
+    """Build a refreshable icechunk credential for one Earthdata bucket.
 
-    Usable anywhere an `icechunk.AnyS3Credential` is accepted. For
-    `icechunk.Repository.open(authorize_virtual_chunk_access=...)`, wrap it
-    with `icechunk.containers_credentials({prefix: <this>})`, which icechunk
-    requires for the values of that mapping.
+    The result is an `icechunk.AnyS3Credential`. To read virtual chunks
+    from a single bucket, wrap it with `icechunk.containers_credentials`.
+    To authorize every container a repository declares, use
     [`earthdata_containers_credentials`][earthaccess_auth.adapters.icechunk.earthdata_containers_credentials]
-    does that for every container the repository declares whose bucket CMR
-    references for Earthdata granules. No other container is authorized
-    automatically.
+    instead.
 
     Parameters:
-        bucket_or_endpoint: A registered bucket name, an `s3://` URL of
-            one, or an `https://` `s3credentials` endpoint directly.
+        bucket_or_endpoint: A bucket name from the CMR-derived
+            [`BUCKET_REGISTRY`][earthaccess_auth.daac.BUCKET_REGISTRY], an
+            `s3://` URL of one, or an `https://` `s3credentials` endpoint.
 
     Raises:
         S3CredentialsEndpointUnresolved: If a bucket name/URL isn't in the
             CMR-derived
             [`BUCKET_REGISTRY`][earthaccess_auth.daac.BUCKET_REGISTRY].
+
+    Examples:
+        Authorize one virtual chunk container by hand:
+
+        ```python
+        prefix = "s3://podaac-ops-cumulus-protected/"
+        repo = icechunk.Repository.open(
+            storage,
+            authorize_virtual_chunk_access=icechunk.containers_credentials(
+                {prefix: earthdata_s3_credentials(prefix)}
+            ),
+        )
+        ```
     """
     return icechunk.s3_refreshable_credentials(
         get_credentials_callable(bucket_or_endpoint)
@@ -100,29 +111,42 @@ def earthdata_containers_credentials(
 ) -> dict[str, icechunk.AnyCredential | None]:
     """Authorize a repository's virtual chunk containers in CMR-referenced buckets.
 
-    Reads the repository's saved configuration from `storage` and pairs each
-    virtual chunk container whose URL prefix is a bucket that CMR references
-    for Earthdata granules (the
-    [`BUCKET_REGISTRY`][earthaccess_auth.daac.BUCKET_REGISTRY]) with
+    Reads the repository's saved configuration from `storage` and returns
+    credentials for each virtual chunk container whose bucket is in the
+    CMR-derived [`BUCKET_REGISTRY`][earthaccess_auth.daac.BUCKET_REGISTRY],
+    which holds the buckets that CMR references for Earthdata granules.
+    Each gets
     [`earthdata_s3_credentials`][earthaccess_auth.adapters.icechunk.earthdata_s3_credentials].
-    Readers then need to know nothing about where the chunks live:
 
-    ```python
-    repo = icechunk.Repository.open(
-        storage,
-        authorize_virtual_chunk_access=earthdata_containers_credentials(storage),
-    )
-    ```
-
-    Only those buckets are authorized automatically. Containers for any
-    other bucket are left out, even a bucket that holds Earthdata but that
-    no CMR collection references. Add your own credentials for those to
-    the returned dict. A repository without a saved configuration, or
-    without containers, yields an empty dict.
+    Containers in any other bucket are left out, even one that holds
+    Earthdata granules but that CMR doesn't reference. A repository without
+    a saved configuration, or without containers, yields an empty dict.
 
     Parameters:
         storage: The repository's `icechunk.Storage`, as passed to
             `icechunk.Repository.open`.
+
+    Examples:
+        Open a repository without knowing which buckets hold its chunks:
+
+        ```python
+        repo = icechunk.Repository.open(
+            storage,
+            authorize_virtual_chunk_access=earthdata_containers_credentials(storage),
+        )
+        ```
+
+        Add credentials for a container outside the registry:
+
+        ```python
+        authorized = earthdata_containers_credentials(storage)
+        authorized |= icechunk.containers_credentials(
+            {"s3://my-bucket/": icechunk.s3_credentials(from_env=True)}
+        )
+        repo = icechunk.Repository.open(
+            storage, authorize_virtual_chunk_access=authorized
+        )
+        ```
     """
     config = icechunk.Repository.fetch_config(storage)
     containers = (config.virtual_chunk_containers if config else None) or {}
