@@ -17,8 +17,9 @@ changelog for history predating the extraction.
 - Added `adapters.icechunk.earthdata_containers_credentials(repo)`,
   which reads an open repository's virtual chunk containers and returns
   the `authorize_virtual_chunk_access` mapping for `repo.reopen` covering
-  those whose bucket CMR references for Earthdata granules. Readers need not know which bucket
-  holds the chunks. Containers for any other bucket get no credentials.
+  those whose bucket CMR references for Earthdata granules. Readers don't
+  have to know which bucket holds the chunks. Containers for any other
+  bucket get no credentials.
 
 ## [0.3.1] - 2026-08-31
 
