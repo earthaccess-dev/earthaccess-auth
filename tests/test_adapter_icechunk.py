@@ -1,12 +1,16 @@
 import pickle
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import TYPE_CHECKING, cast
 
 import pytest
 
 import earthaccess_auth.credentials as credentials_module
 from earthaccess_auth.credentials import S3Credentials
 from earthaccess_auth.exceptions import S3CredentialsEndpointUnresolved
+
+if TYPE_CHECKING:
+    from icechunk import Repository
 
 icechunk = pytest.importorskip("icechunk")
 
@@ -86,7 +90,7 @@ def test_refreshable_credentials_wrapper(stub_manager: StubManager) -> None:
     assert isinstance(refreshable, icechunk.S3Credentials.Refreshable)
 
 
-def _open_repository(tmp_path: Path, *prefixes: str) -> "icechunk.Repository":
+def _open_repository(tmp_path: Path, *prefixes: str) -> "Repository":
     storage = icechunk.local_filesystem_storage(str(tmp_path))
     config = icechunk.RepositoryConfig.default()
     for prefix in prefixes:
@@ -102,7 +106,7 @@ def _open_repository(tmp_path: Path, *prefixes: str) -> "icechunk.Repository":
             dict.fromkeys(prefixes, icechunk.s3_anonymous_credentials())
         ),
     )
-    return icechunk.Repository.open(storage)
+    return cast("Repository", icechunk.Repository.open(storage))
 
 
 def test_containers_credentials_cover_registered_containers(
