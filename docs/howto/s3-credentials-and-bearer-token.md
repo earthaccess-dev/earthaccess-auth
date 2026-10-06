@@ -22,7 +22,8 @@ a tight dependency budget would use.
 
 For anything that accepts a plain `headers` dict (obstore HTTP stores,
 obspec-utils's `AiohttpStore` — see [Read a dataset with xarray](read-a-dataset.md)
-— or icechunk's `http_store(headers=...)` for virtual chunk containers) use
+— or icechunk's [`http_store(headers=...)`][icechunk.http_store] for virtual
+chunk containers) use
 `http_client_options`:
 
 ```python

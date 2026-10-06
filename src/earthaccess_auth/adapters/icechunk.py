@@ -51,8 +51,10 @@ def get_credentials_callable(
 ) -> Callable[[], icechunk.S3StaticCredentials]:
     """Build a picklable zero-argument callable for icechunk's credential hooks.
 
-    Suitable for `icechunk.s3_storage(get_credentials=...)` and
-    `icechunk.s3_refreshable_credentials`. icechunk re-invokes it when
+    Suitable for
+    [`icechunk.s3_storage(get_credentials=...)`][icechunk.s3_storage] and
+    [`icechunk.s3_refreshable_credentials`][icechunk.s3_refreshable_credentials].
+    icechunk re-invokes it when
     the returned credentials' `expires_after` passes.
 
     Parameters:
@@ -73,7 +75,8 @@ def earthdata_s3_credentials(
     """Build a refreshable icechunk credential for one Earthdata bucket.
 
     The result is an `icechunk.AnyS3Credential`. To read virtual chunks
-    from a single bucket, wrap it with `icechunk.containers_credentials`.
+    from a single bucket, wrap it with
+    [`icechunk.containers_credentials`][icechunk.containers_credentials].
     To authorize every container a repository declares, use
     [`earthdata_containers_credentials`][earthaccess_auth.adapters.icechunk.earthdata_containers_credentials]
     instead.
@@ -116,16 +119,17 @@ def earthdata_containers_credentials(
     [`BUCKET_REGISTRY`][earthaccess_auth.daac.BUCKET_REGISTRY], which holds
     the buckets that CMR references for Earthdata granules. Each gets
     [`earthdata_s3_credentials`][earthaccess_auth.adapters.icechunk.earthdata_s3_credentials].
-    Pass the result to `repo.reopen`, which reuses the already loaded
-    config instead of reading it from storage again.
+    Pass the result to [`repo.reopen`][icechunk.Repository.reopen], which
+    reuses the already loaded config instead of reading it from storage
+    again.
 
     Containers in any other bucket are left out, even one that holds
     Earthdata granules but that CMR doesn't reference. A repository without
     containers yields an empty dict.
 
     Parameters:
-        repo: An open `icechunk.Repository`. It needs no virtual chunk
-            credentials yet.
+        repo: An open [`icechunk.Repository`][icechunk.Repository]. It
+            needs no virtual chunk credentials yet.
 
     Examples:
         Open a repository without knowing which buckets hold its chunks:
