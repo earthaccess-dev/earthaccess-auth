@@ -1,14 +1,13 @@
 """obstore integration (extra: earthaccess-auth[obstore]).
 
-This module provides both a new native obstore-protocol credential provider
-([`EarthdataS3CredentialProvider`][earthaccess_auth.adapters.obstore.EarthdataS3CredentialProvider])
-and re-exports of obstore's own EDL-to-S3 credential exchange for
-compatibility. The native provider is the recommended way to integrate with
-obstore, as it avoids any hard coupling to obstore's types or versions and
-shares the process-wide credential cache.
+Use
+[`EarthdataS3CredentialProvider`][earthaccess_auth.adapters.obstore.EarthdataS3CredentialProvider]
+for S3 stores. It doesn't depend on obstore's types, and it shares the
+process-wide credential cache. For HTTPS stores, use
+[`http_client_options`][earthaccess_auth.adapters.obstore.http_client_options].
 
-Also adds an HTTP-headers helper for the cases the credential provider
-doesn't cover.
+The module also re-exports obstore's own `NasaEarthdataCredentialProvider`
+and `NasaEarthdataAsyncCredentialProvider`.
 """
 
 from typing import Any, Protocol
@@ -30,8 +29,7 @@ from earthaccess_auth.exceptions import S3CredentialsEndpointUnresolved
 class _CredentialSource(Protocol):
     """Anything that can serve cached credentials for an endpoint.
 
-    Structural on purpose: `S3CredentialManager` satisfies it, and so do
-    test stubs — mirroring how obstore itself duck-types providers.
+    `S3CredentialManager` and test stubs both satisfy it.
     """
 
     def get_credentials(self, endpoint: str) -> S3Credentials: ...
@@ -40,14 +38,14 @@ class _CredentialSource(Protocol):
 class EarthdataS3CredentialProvider:
     """obstore-compatible S3 credential provider backed by earthaccess-auth.
 
-    Implements obstore's *structural* `S3CredentialProvider` protocol — a
-    callable returning the credential dict, plus a `config` attribute
-    carrying the region — so this class avoids any hard coupling to
-    obstore's types or versions and works with any obstore version that
-    accepts custom providers. (The module itself still requires the
-    `obstore` extra, because of the top-level re-exports below.) obstore
-    re-invokes the provider itself once `expires_at` passes; the shared
-    credential manager behind it deduplicates those fetches across stores.
+    Implements obstore's `S3CredentialProvider` protocol without importing
+    obstore's types. Calling the provider returns the credential dict, and
+    its `config` attribute carries the region. It works with any obstore
+    version that accepts custom credential providers.
+
+    obstore calls the provider again once `expires_at` passes. Stores that
+    share an endpoint share one cached fetch through the credential
+    manager.
     """
 
     def __init__(

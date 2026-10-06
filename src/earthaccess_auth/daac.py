@@ -293,9 +293,10 @@ BUCKET_ENDPOINTS: dict[str, str] = {
     bucket: info.endpoint for bucket, info in BUCKET_REGISTRY.items()
 }
 """Bucket name -> `s3credentials` endpoint, derived from
-[`BUCKET_REGISTRY`][earthaccess_auth.daac.BUCKET_REGISTRY] (kept for
-backwards compatibility; new code should prefer the registry, which also
-carries the region)."""
+[`BUCKET_REGISTRY`][earthaccess_auth.daac.BUCKET_REGISTRY].
+
+Kept for backwards compatibility. New code should use the registry, which
+also carries the region."""
 
 
 def find_endpoint_by_bucket(bucket: str) -> str | None:

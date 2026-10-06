@@ -36,12 +36,12 @@ class S3CredentialsEndpointUnresolved(Exception):  # noqa: N818
 class S3CredentialsRequestFailure(Exception):  # noqa: N818
     """Raised when a DAAC's `s3credentials` endpoint rejects a request.
 
-    Commonly this means the EDL profile hasn't accepted the DAAC's EULA or
-    application terms yet; the error message includes the URLs to review
-    them. `status_code` carries the endpoint's HTTP status (`None` when the
-    failure wasn't an HTTP rejection), so consumers can distinguish invalid
-    credentials (401 — a service-side problem) from an unaccepted EULA
-    (403 — a user-side problem).
+    Usually the EDL profile hasn't accepted the DAAC's EULA or application
+    terms yet. The error message includes the URLs to review them.
+
+    `status_code` carries the endpoint's HTTP status, or `None` when the
+    failure wasn't an HTTP rejection. A 401 means the service's credentials
+    are invalid. A 403 means the user hasn't accepted a EULA.
     """
 
     def __init__(self, message: str, status_code: int | None = None) -> None:

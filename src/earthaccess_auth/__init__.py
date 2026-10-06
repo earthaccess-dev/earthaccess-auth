@@ -1,7 +1,7 @@
 """NASA Earthdata Login (EDL) authentication core, extracted from earthaccess.
 
-Runtime dependencies are requests, tinynetrc, and typing-extensions only.
-fsspec and obstore integrations live under `earthaccess_auth.adapters`
+The only runtime dependencies are requests and tinynetrc. The fsspec,
+obstore, and icechunk integrations live under `earthaccess_auth.adapters`
 behind optional extras.
 """
 
@@ -67,8 +67,8 @@ def login(
             The authentication method.
 
             * **"all"**: (default) Try, in order: environment variables,
-                `~/.netrc`, then an interactive prompt — stopping at the
-                first one that works.
+                `~/.netrc`, then an interactive prompt. Stops at the first
+                one that works.
             * **"interactive"**: Enter a username and password.
             * **"netrc"**: Retrieve a username and password from `~/.netrc`.
             * **"environment"**:
