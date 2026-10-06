@@ -14,13 +14,46 @@ changelog for history predating the extraction.
 
 - Added `adapters.icechunk.earthdata_containers_credentials(storage)`,
   which reads a repository's virtual chunk containers and returns the
-  `authorize_virtual_chunk_access` mapping for every registered Earthdata
-  bucket among them, so readers need not know which bucket holds the chunks.
+  `authorize_virtual_chunk_access` mapping for those whose bucket CMR
+  references for Earthdata granules. Readers need not know which bucket
+  holds the chunks. Containers for any other bucket get no credentials.
+
+## [0.3.1] - 2026-08-31
+
+### Fixed
+
+- `Auth.get_s3_credentials` raises `S3CredentialsRequestFailure` and
+  `Auth.login` raises `LoginAttemptFailure` when Earthdata Login answers
+  with a non-JSON body (e.g. a login page served with a 200), instead of
+  an untyped JSON decode error.
+
+## [0.3.0] - 2026-08-26
+
+### Added
 
 - `exceptions.S3CredentialsRequestFailure` carries the endpoint's HTTP
   status as `status_code` (`None` when the failure wasn't an HTTP
   rejection), so consumers can distinguish rejected service credentials
   (401) from an unaccepted EULA (403).
+- Added `credentials.set_default_manager` to set a pre-built
+  `S3CredentialManager` as the process-wide default. Unlike
+  `set_default_auth` (now a wrapper around it), it keeps the manager's
+  per-endpoint credential cache, so validating an identity and making it
+  the default costs one s3credentials fetch instead of two.
+- Added a docs glossary of the library's concepts and reorganized the API
+  reference around them.
+
+### Fixed
+
+- `S3CredentialManager.get_credentials` no longer holds the manager-wide
+  lock across the HTTP round trip: fetches are guarded by per-endpoint
+  locks, so a slow or hung fetch for one endpoint no longer stalls
+  callers of other endpoints whose cached credentials are still valid.
+
+## [0.2.0] - 2026-08-24
+
+### Added
+
 - Added `earthaccess_auth.credentials`: `fetch_s3_credentials`,
   `S3Credentials`, thread-safe per-endpoint `S3CredentialManager`, and a
   process-wide `default_manager()` (non-interactive login only).
@@ -33,13 +66,6 @@ changelog for history predating the extraction.
 - Added `adapters.icechunk` (extra: `earthaccess-auth[icechunk]`) with
   picklable refreshable S3 credentials for icechunk stores and virtual
   chunk containers.
-- Added `credentials.set_default_manager` to set a pre-built
-  `S3CredentialManager` as the process-wide default. Unlike
-  `set_default_auth` (now a wrapper around it), it keeps the manager's
-  per-endpoint credential cache, so validating an identity and making it
-  the default costs one s3credentials fetch instead of two.
-- Added a docs glossary of the library's concepts and reorganized the API
-  reference around them.
 
 ### Removed
 
@@ -48,13 +74,6 @@ changelog for history predating the extraction.
   import and shares the process-wide credential cache.
 - **Breaking:** removed `Auth.refresh_tokens()`; it has no replacement, as
   tokens are refreshed automatically.
-
-### Fixed
-
-- `S3CredentialManager.get_credentials` no longer holds the manager-wide
-  lock across the HTTP round trip: fetches are guarded by per-endpoint
-  locks, so a slow or hung fetch for one endpoint no longer stalls
-  callers of other endpoints whose cached credentials are still valid.
 
 ## [0.1.0] - 2026-08-19
 
@@ -82,5 +101,8 @@ Behavior differences from the implementation extracted out of `earthaccess`:
   request instead of potentially hanging forever.
 - Python 3.12 or newer is required.
 
-[Unreleased]: https://github.com/earthaccess-dev/earthaccess-auth/commits/main/
+[Unreleased]: https://github.com/earthaccess-dev/earthaccess-auth/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/earthaccess-dev/earthaccess-auth/releases/tag/v0.3.1
+[0.3.0]: https://github.com/earthaccess-dev/earthaccess-auth/releases/tag/v0.3.0
+[0.2.0]: https://github.com/earthaccess-dev/earthaccess-auth/releases/tag/v0.2.0
 [0.1.0]: https://github.com/earthaccess-dev/earthaccess-auth/releases/tag/v0.1.0

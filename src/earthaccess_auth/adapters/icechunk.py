@@ -77,7 +77,9 @@ def earthdata_s3_credentials(
     with `icechunk.containers_credentials({prefix: <this>})`, which icechunk
     requires for the values of that mapping.
     [`earthdata_containers_credentials`][earthaccess_auth.adapters.icechunk.earthdata_containers_credentials]
-    does that for every container the repository declares.
+    does that for every container the repository declares whose bucket CMR
+    references for Earthdata granules. No other container is authorized
+    automatically.
 
     Parameters:
         bucket_or_endpoint: A registered bucket name, an `s3://` URL of
@@ -96,11 +98,12 @@ def earthdata_s3_credentials(
 def earthdata_containers_credentials(
     storage: icechunk.Storage,
 ) -> dict[str, icechunk.AnyCredential | None]:
-    """Authorize every Earthdata bucket a repository declares as a virtual chunk container.
+    """Authorize a repository's virtual chunk containers in CMR-referenced buckets.
 
     Reads the repository's saved configuration from `storage` and pairs each
-    virtual chunk container whose URL prefix is a bucket in the CMR-derived
-    [`BUCKET_REGISTRY`][earthaccess_auth.daac.BUCKET_REGISTRY] with
+    virtual chunk container whose URL prefix is a bucket that CMR references
+    for Earthdata granules (the
+    [`BUCKET_REGISTRY`][earthaccess_auth.daac.BUCKET_REGISTRY]) with
     [`earthdata_s3_credentials`][earthaccess_auth.adapters.icechunk.earthdata_s3_credentials].
     Readers then need to know nothing about where the chunks live:
 
@@ -111,9 +114,11 @@ def earthdata_containers_credentials(
     )
     ```
 
-    Containers for unregistered buckets are left out. Add your own
-    credentials for those to the returned dict. A repository without a
-    saved configuration, or without containers, yields an empty dict.
+    Only those buckets are authorized automatically. Containers for any
+    other bucket are left out, even a bucket that holds Earthdata but that
+    no CMR collection references. Add your own credentials for those to
+    the returned dict. A repository without a saved configuration, or
+    without containers, yields an empty dict.
 
     Parameters:
         storage: The repository's `icechunk.Storage`, as passed to
