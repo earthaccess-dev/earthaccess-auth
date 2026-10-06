@@ -36,6 +36,7 @@ plugins:
           paths: ["src"]
           inventories:
             - https://developmentseed.org/obstore/latest/objects.inv
+            - https://icechunk.io/en/stable/objects.inv
           options:
             docstring_style: google
             docstring_options:

@@ -163,3 +163,7 @@ reaches production.
 ::: earthaccess_auth.adapters.icechunk.earthdata_s3_credentials
     options:
       show_root_heading: true
+
+::: earthaccess_auth.adapters.icechunk.earthdata_containers_credentials
+    options:
+      show_root_heading: true
