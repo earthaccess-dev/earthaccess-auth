@@ -2,10 +2,10 @@
 
 Builds refreshable icechunk credentials backed by the shared
 [credential manager][earthaccess_auth.credentials.S3CredentialManager].
-icechunk re-invokes the callable once the credentials it holds pass
-`expires_after`, and the callable is a module-level function bound with
-`functools.partial`, so it — and any repository/session objects holding
-it — survives pickling.
+icechunk calls the credential function again once the credentials it
+holds pass `expires_after`. The function is a module-level function bound
+with `functools.partial`, so it can be pickled along with any repository
+or session that holds it.
 """
 
 from __future__ import annotations
@@ -54,8 +54,8 @@ def get_credentials_callable(
     Suitable for
     [`icechunk.s3_storage(get_credentials=...)`][icechunk.s3_storage] and
     [`icechunk.s3_refreshable_credentials`][icechunk.s3_refreshable_credentials].
-    icechunk re-invokes it when
-    the returned credentials' `expires_after` passes.
+    icechunk calls it again when the returned credentials' `expires_after`
+    passes.
 
     Parameters:
         bucket_or_endpoint: A registered bucket name, an `s3://` URL of
@@ -114,10 +114,11 @@ def earthdata_containers_credentials(
 ) -> dict[str, icechunk.AnyCredential | None]:
     """Authorize a repository's virtual chunk containers in CMR-referenced buckets.
 
-    Returns credentials for each virtual chunk container in `repo`'s config
-    whose bucket is in the CMR-derived
-    [`BUCKET_REGISTRY`][earthaccess_auth.daac.BUCKET_REGISTRY], which holds
-    the buckets that CMR references for Earthdata granules. Each gets
+    The CMR-derived
+    [`BUCKET_REGISTRY`][earthaccess_auth.daac.BUCKET_REGISTRY] holds the
+    buckets that CMR references for Earthdata granules. For each virtual
+    chunk container in `repo`'s config whose bucket is in the registry, this
+    returns
     [`earthdata_s3_credentials`][earthaccess_auth.adapters.icechunk.earthdata_s3_credentials].
     Pass the result to [`repo.reopen`][icechunk.Repository.reopen], which
     reuses the already loaded config instead of reading it from storage

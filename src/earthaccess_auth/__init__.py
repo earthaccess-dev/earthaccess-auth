@@ -1,7 +1,7 @@
 """NASA Earthdata Login (EDL) authentication core, extracted from earthaccess.
 
-Runtime dependencies are requests, tinynetrc, and typing-extensions only.
-fsspec and obstore integrations live under `earthaccess_auth.adapters`
+The only runtime dependencies are requests and tinynetrc. The fsspec,
+obstore, and icechunk integrations live under `earthaccess_auth.adapters`
 behind optional extras.
 """
 
@@ -67,8 +67,8 @@ def login(
             The authentication method.
 
             * **"all"**: (default) Try, in order: environment variables,
-                `~/.netrc`, then an interactive prompt — stopping at the
-                first one that works.
+                `~/.netrc`, then an interactive prompt. Stops at the first
+                one that works.
             * **"interactive"**: Enter a username and password.
             * **"netrc"**: Retrieve a username and password from `~/.netrc`.
             * **"environment"**:
@@ -77,11 +77,12 @@ def login(
                 variables, or an Earthdata login token from the
                 `EARTHDATA_TOKEN` environment variable.
         persist: Persist username and password credentials in a `.netrc` file.
-        system: The EDL endpoint to authenticate against. Defaults to `PROD`.
+        system: The EDL endpoint to authenticate against. Defaults to
+            [`PROD`][earthaccess_auth.PROD].
 
     Returns:
-        An authenticated `Auth` instance. Hold onto it yourself — there's no
-        module-level singleton, so pass it to whatever needs it.
+        An authenticated [`Auth`][earthaccess_auth.Auth] instance to pass to any functions that
+        need authentication.
     """
     auth = Auth()
 

@@ -1,11 +1,13 @@
 # API reference
 
-Organized by concept. Terms are defined in the [glossary](glossary.md).
+This reference is organized by concept. The [glossary](glossary.md)
+defines the terms.
 
 ## Identity
 
-An identity is an authenticated Earthdata Login account. Everything else in
-the library exchanges an identity for something a storage client can use.
+An identity is an authenticated Earthdata Login account. The rest of the
+library exchanges an identity for something that a storage client can
+use.
 
 ::: earthaccess_auth.login
     options:
@@ -18,9 +20,9 @@ the library exchanges an identity for something a storage client can use.
 
 ## Temporary S3 credentials
 
-DAACs exchange an identity for hour-scale AWS credentials at their
-per-DAAC `s3credentials` endpoint, for direct in-region reads of protected
-buckets.
+Each DAAC has an `s3credentials` endpoint. It exchanges an identity for
+AWS credentials that are valid for about one hour. Use these credentials to
+read protected buckets directly from the same AWS region.
 
 ::: earthaccess_auth.S3Credentials
     options:
@@ -32,8 +34,9 @@ buckets.
 
 ## Credential managers
 
-A manager wraps one identity and caches temporary credentials per endpoint,
-re-fetching shortly before expiry.
+A manager holds one identity. It keeps a cache of temporary credentials
+for each endpoint, and fetches new credentials shortly before they
+expire.
 
 ::: earthaccess_auth.S3CredentialManager
     options:
@@ -42,13 +45,14 @@ re-fetching shortly before expiry.
 
 ## The process-wide default
 
-One manager is shared by the whole process. The adapters read it by calling
-[`default_manager`][earthaccess_auth.default_manager] at use time, so
-setting a new default swaps the identity for every consumer at once. Most
-callers set it with [`set_default_auth`][earthaccess_auth.set_default_auth].
+The whole process shares one manager. The adapters call
+[`default_manager`][earthaccess_auth.default_manager] each time they need
+credentials. So when you set a new default, all consumers use the new
+identity immediately. Most callers set the default with
+[`set_default_auth`][earthaccess_auth.set_default_auth]. Use
 [`set_default_manager`][earthaccess_auth.credentials.set_default_manager]
-is for the caller that validated an identity through a manager and wants
-to keep that manager's warm cache.
+if you already checked an identity through a manager and want to keep the
+credentials that manager has in its cache.
 
 ::: earthaccess_auth.default_manager
     options:
@@ -101,10 +105,11 @@ to keep that manager's warm cache.
 
 ## Systems
 
-The Earthdata deployment to authenticate against, passed as
-[`login`][earthaccess_auth.login]'s `system` parameter. Defaults to `PROD`;
-pass `UAT` to test against NASA's pre-release environment before a change
-reaches production.
+A system is the Earthdata deployment that you log in to. Pass it as the
+`system` parameter of [`login`][earthaccess_auth.login]. The default is
+[`PROD`][earthaccess_auth.PROD]. To test with NASA's pre-release
+environment before a change goes to production, pass
+[`UAT`][earthaccess_auth.UAT].
 
 ::: earthaccess_auth.System
     options:

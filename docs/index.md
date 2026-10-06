@@ -1,22 +1,27 @@
 # earthaccess-auth
 
-A minimal-dependency distribution containing only the NASA Earthdata Login
-(EDL) authentication core of [earthaccess](https://github.com/earthaccess-dev/earthaccess):
-login strategies, token lifecycle, per-DAAC S3 credential exchange, and the
-redirect-safe requests session. Integrations with [fsspec](https://filesystem-spec.readthedocs.io/)
-and [obstore](https://developmentseed.org/obstore/) are optional extras, so
-auth-only consumers don't install the rest of earthaccess's search/download
-stack.
+`earthaccess-auth` contains only the NASA Earthdata Login (EDL)
+authentication core of
+[earthaccess](https://github.com/earthaccess-dev/earthaccess). It has few
+dependencies. It includes the login strategies, token handling, the S3
+credential exchange for each DAAC, and a requests session that keeps
+authentication across redirects.
 
-If you only need a bearer token or temporary S3 credentials, not CMR search,
-this package is probably all you need.
+Optional extras add integrations with
+[fsspec](https://filesystem-spec.readthedocs.io/),
+[obstore](https://developmentseed.org/obstore/), and
+[icechunk](https://icechunk.io/).
+
+Use this library to read data from NASA cloud buckets when you don't need
+CMR search.
 
 ## Install
 
 ```
 pip install earthaccess-auth            # requests + tinynetrc only
 pip install earthaccess-auth[fsspec]    # + fsspec/aiohttp HTTPS session
-pip install earthaccess-auth[obstore]   # + obstore credential provider bridge
+pip install earthaccess-auth[obstore]   # + obstore credential provider
+pip install earthaccess-auth[icechunk]  # + icechunk credentials
 ```
 
 ## Quickstart
@@ -30,9 +35,9 @@ if not auth.authenticated:
 token = auth.token["access_token"]
 ```
 
-`login()` returns an `Auth` instance rather than a module-level singleton, so
-you can hold onto (or pass around) multiple authenticated sessions if you
-need to.
+[`login()`][earthaccess_auth.login] returns a new
+[`Auth`][earthaccess_auth.Auth] instance each time. You can keep more than
+one authenticated instance and pass each one where you need it.
 
 ## Where to go next
 

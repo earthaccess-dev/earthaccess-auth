@@ -1,7 +1,6 @@
 """Optional integrations, each guarded by an install extra.
 
-`earthaccess_auth.adapters.fsspec` requires earthaccess-auth[fsspec];
-`earthaccess_auth.adapters.obstore` requires earthaccess-auth[obstore].
-Nothing here imports at package-import time, so the core stays
-requests-only.
+Each module `earthaccess_auth.adapters.<name>` requires the matching
+`earthaccess-auth[<name>]` extra, for `fsspec`, `obstore`, and `icechunk`.
+Importing `earthaccess_auth` doesn't import any of them.
 """

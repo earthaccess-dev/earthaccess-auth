@@ -48,9 +48,9 @@ def netrc_path() -> Path:
     See [the `.netrc` file](https://www.gnu.org/software/inetutils/manual/html_node/The-_002enetrc-file.html).
 
     Returns:
-        `Path` of the `NETRC` environment variable, if the value is non-empty;
-        otherwise, the path of the platform-specific default location:
-        `~/_netrc` on Windows systems, `~/.netrc` on non-Windows systems.
+        The value of the `NETRC` environment variable as a `Path`, if it is
+        not empty. If it is empty, the default path for the platform:
+        `~/_netrc` on Windows, `~/.netrc` on other systems.
     """
     sys_netrc_name = "_netrc" if platform.system() == "Windows" else ".netrc"
     env_netrc = os.environ.get("NETRC")
@@ -142,10 +142,11 @@ class Auth:
                     or an Earthdata login token from the `EARTHDATA_TOKEN` environment
                     variable.
             persist: Persist username and password credentials in a `.netrc` file.
-            system: The EDL endpoint to authenticate against. Defaults to `PROD`.
+            system: The EDL endpoint to authenticate against. Defaults to
+                [`PROD`][earthaccess_auth.PROD].
 
         Returns:
-            This `Auth` instance, now authenticated.
+            The authenticated [`Auth`][earthaccess_auth.Auth] instance.
 
         Raises:
             LoginAttemptFailure: If the NASA Earthdata Login service rejects
@@ -195,9 +196,9 @@ class Auth:
     ) -> dict[str, str]:
         """Get temporary AWS S3 credentials for a NASA DAAC's cloud bucket(s).
 
-        Usually you only need `daac`. `provider` and `endpoint` are for when
-        you already know the DAAC's cloud provider code or its
-        `s3credentials` URL and want to skip the DAAC registry lookup.
+        Usually you only need `daac`. If you already know the DAAC's cloud
+        provider code or its `s3credentials` URL, pass `provider` or
+        `endpoint` instead. Then no DAAC registry lookup occurs.
 
         Parameters:
             daac: A DAAC's short name, e.g. `"NSIDC"` or `"PODAAC"`.
@@ -265,7 +266,7 @@ class Auth:
         """Build a new `requests.Session` with EDL authentication configured.
 
         Returns:
-            A `requests.Session` carrying the bearer token (if authenticated)
+            A [`requests.Session`][requests.Session] carrying the bearer token (if authenticated)
             and re-attaching EDL credentials after redirects.
         """
         username, password = self.username, self.password

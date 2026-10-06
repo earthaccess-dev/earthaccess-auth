@@ -13,11 +13,13 @@ def get_fsspec_https_session(auth: Auth) -> fsspec.AbstractFileSystem:
     request.
 
     Parameters:
-        auth: An authenticated `Auth` instance.
+        auth: An authenticated [`Auth`][earthaccess_auth.Auth] instance.
 
     Returns:
-        An `fsspec.AbstractFileSystem` (`HTTPFileSystem`) ready to pass to
-        `xarray.open_dataset` or open files directly.
+        An [`fsspec.AbstractFileSystem`][fsspec.spec.AbstractFileSystem]
+        ([`HTTPFileSystem`][fsspec.implementations.http.HTTPFileSystem])
+        ready to pass to [`xarray.open_dataset`][xarray.open_dataset] or to
+        open files directly.
 
     Raises:
         ValueError: If `auth` has not been authenticated (`auth.token is None`).

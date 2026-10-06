@@ -1,12 +1,10 @@
 """Shared EDL-to-S3 credential fetching and caching.
 
-The DAAC `s3credentials` endpoints issue roughly one-hour STS
-credentials. Consumers like obstore and icechunk each re-invoke their
-credential callable when the credentials they hold expire, so what
-belongs here is not a refresh loop but a fetch primitive plus a
-thread-safe cache: the 36 registered buckets funnel into ~15 endpoints,
-and one job commonly opens stores on several of them, so sharing a
-manager turns many EDL round-trips into one per endpoint.
+The DAAC `s3credentials` endpoints issue STS credentials that last about
+an hour. obstore and icechunk call their credential function again when
+those expire, so this module has no refresh loop. It has a fetch function
+and a thread-safe cache per endpoint. Many buckets share an endpoint, so
+one job that opens several stores fetches credentials once per endpoint.
 """
 
 from __future__ import annotations
@@ -37,16 +35,16 @@ class S3Credentials:
 def fetch_s3_credentials(auth: Auth, endpoint: str) -> S3Credentials:
     """Fetch and parse temporary S3 credentials from an `s3credentials` endpoint.
 
-    A one-shot, uncached fetch — the primitive external credential
-    providers (e.g. obstore's) can delegate to. For repeated access, use
-    [`S3CredentialManager`][earthaccess_auth.credentials.S3CredentialManager].
+    Use [`S3CredentialManager`][earthaccess_auth.credentials.S3CredentialManager]
+    for repeated access.
 
     Parameters:
-        auth: An authenticated `Auth` instance.
+        auth: An authenticated [`Auth`][earthaccess_auth.Auth] instance.
         endpoint: A DAAC's `s3credentials` URL.
 
     Returns:
-        The parsed credentials, with `expires_at` timezone-aware (a naive
+        The parsed credentials, with
+        [`expires_at`][earthaccess_auth.S3Credentials.expires_at] timezone-aware (a naive
         timestamp from the endpoint is interpreted as UTC).
 
     Raises:
@@ -76,7 +74,7 @@ class S3CredentialManager:
         """Initialize the manager.
 
         Parameters:
-            auth: An authenticated `Auth` instance.
+            auth: An authenticated [`Auth`][earthaccess_auth.Auth] instance.
             refresh_margin: Re-fetch credentials once they are within this
                 margin of expiry, so consumers never receive credentials
                 about to lapse mid-request.
@@ -98,10 +96,10 @@ class S3CredentialManager:
     def get_credentials(self, endpoint: str) -> S3Credentials:
         """Return cached credentials for `endpoint`, fetching if stale/absent.
 
-        The fetch is guarded by a per-endpoint lock, so concurrent callers
-        of the same endpoint still trigger a single fetch, while a slow
-        fetch for one endpoint never blocks callers of another endpoint
-        whose cached credentials are still valid.
+        Each endpoint has its own lock for the fetch. Concurrent callers of
+        the same endpoint cause only one fetch. A slow fetch for one
+        endpoint doesn't block callers of a different endpoint that has
+        valid cached credentials.
         """
         with self._lock:
             fresh = self._fresh(endpoint)
@@ -159,9 +157,9 @@ def set_default_manager(manager: S3CredentialManager) -> None:
 
     Most callers want
     [`set_default_auth`][earthaccess_auth.credentials.set_default_auth]. Use
-    this one when you already have a manager, usually because you validated
-    its identity by fetching credentials through it first: consumers then
-    start from that warm cache instead of repeating the fetch.
+    this one when you already have a manager, usually because you fetched
+    credentials through it to check its identity. Consumers then reuse
+    those cached credentials instead of fetching them again.
     """
     global _default_manager  # noqa: PLW0603
     with _default_manager_lock:
@@ -173,18 +171,18 @@ def default_manager() -> S3CredentialManager:
 
     First use logs in with the non-interactive strategies, in order:
     `environment` (`EARTHDATA_TOKEN`, or `EARTHDATA_USERNAME` +
-    `EARTHDATA_PASSWORD`), then `netrc`. `interactive` is deliberately
-    not attempted: this path runs inside services, where a blocked
-    `input()` prompt is worse than a clear error.
+    `EARTHDATA_PASSWORD`), then `netrc`. It never tries `interactive`,
+    because this runs inside services, where an [`input()`][input] prompt would
+    block.
 
-    Living at module level keeps adapter callables that reference it
-    picklable, which matters for consumers that pickle opened datasets.
+    Adapter functions reference this module-level manager, so they can be
+    pickled along with the datasets that hold them.
 
     Raises:
         LoginStrategyUnavailable: If neither non-interactive strategy is
             available. Call
             [`set_default_auth`][earthaccess_auth.credentials.set_default_auth]
-            to supply a custom `Auth` instead.
+            to supply a custom [`Auth`][earthaccess_auth.Auth] instead.
     """
     global _default_manager  # noqa: PLW0603
     with _default_manager_lock:
