@@ -6,13 +6,6 @@
     ],
     "region": "us-west-2"
   },
-  "asdc2-prod-protected": {
-    "endpoint": "https://data.asdc.earthdata.nasa.gov/s3credentials",
-    "providers": [
-      "LARC_CLOUD"
-    ],
-    "region": "us-west-2"
-  },
   "asf-cumulus-prod-alos2-products": {
     "endpoint": "https://cumulus.asf.earthdatacloud.nasa.gov/s3credentials",
     "providers": [
@@ -50,6 +43,13 @@
   },
   "asf-cumulus-prod-opera-products": {
     "endpoint": "https://cumulus.asf.alaska.edu/s3credentials",
+    "providers": [
+      "ASF"
+    ],
+    "region": "us-west-2"
+  },
+  "asf-cumulus-prod-products": {
+    "endpoint": "https://cumulus.asf.earthdatacloud.nasa.gov/s3credentials",
     "providers": [
       "ASF"
     ],
